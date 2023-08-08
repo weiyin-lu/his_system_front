@@ -14,7 +14,7 @@
 				</template>
 				<template #default="scope">
 					<el-button size="small" >Edit</el-button>
-					<el-button size="small" type="danger">Delete</el-button>
+					<el-button size="small" type="danger" @click="deleteone(scope.row.docId)">Delete</el-button>
 				</template>
 			</el-table-column>
 		</el-table>
@@ -58,6 +58,18 @@
 					} else {
 						this.$message.error("身份过期，请重新登录")
 						this.$router.push("/")
+					}
+				})
+			},
+			deleteone(id) {
+				axios.delete("http://localhost:8000/doctors/"+id)
+				.then(response => {
+					console.log(response.data)
+					if (response.data.code == "SUCCESS") {
+						this.$message.success("删除成功")
+						this.getlist()
+					} else {
+						this.$message.error(response.data.msg)
 					}
 				})
 			},
