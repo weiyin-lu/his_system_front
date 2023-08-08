@@ -4,12 +4,13 @@
                label-position="right"
                label-width="100px"
                style="max-width: 460px"
-               ref="form"
+               ref="loginForm"
                :rules="rules">
-        <el-form-item label="登录ID">
+			   <!-- 规则 rules 要有对应的 ref 用来查看数据的变化-->
+        <el-form-item label="登录ID" prop="id">
           <el-input v-model="loginForm.id" />
         </el-form-item>
-        <el-form-item label="密码">
+        <el-form-item label="密码" prop="password">
           <el-input type="password" show-password v-model="loginForm.password" />
         </el-form-item>
         <el-form-item>
@@ -29,32 +30,34 @@ export default {
         id: 0,
         password: ""
       },
-      // 验证没有正常生效，需要调整
+	  // 成功验证规则通过，修改规则名与 loginForm 对照
       rules: {
-        idrule: [
+        id: [
           { required: true, message: '请输入ID', trigger: 'blur' }
         ],
-        pwdrule: [
+        password: [
           { required: true, message: '请输入密码', trigger: 'blur' },
-          { min: 6, message: '长度不小于6个字符', trigger: 'blur' }
+          { min: 6, message: '长度不小于6个字符' }
         ],
       }
     };
   },
   methods: {
     login() {
-      this.$refs.form.validate(
+		// 修改验证表单为loginForm
+      this.$refs.loginForm.validate(
           valid => {
             if (valid) {
               //   如果表单验证通过，执行axios请求
-              axios.post("http://localhost:8000/auth/login", this.loginForm)
+              axios.post("http://localhost:8000/auth/", this.loginForm)
                   .then(response => {
                     if(response.data.code == "SUCCESS") {
                       // 把token写入到sessionstorage
                       sessionStorage.setItem("token",response.data.data)
                       this.$message.success("登录成功")
+					  this.$router.push("/doctors")
                     } else {
-                      localStorage.setItem("token","")
+                      sessionStorage.setItem("token","")
                       this.$message.error("登录失败，" + response.data.msg)
                     }
                   })
