@@ -3,7 +3,7 @@
 </template>
 
 <script>
-	import DeptList from "@/components/DeptList.vue";
+	import DeptList from "@/components/backup/DeptList.vue";
 	export default {
 		name: "Dept",
 		components: {

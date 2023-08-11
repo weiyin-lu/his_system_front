@@ -3,7 +3,7 @@
 </template>
 
 <script>
-	import DoctorList from "@/components/DoctorList.vue";
+	import DoctorList from "@/components/backup/DoctorList.vue";
 	export default {
 		name: "Doctor",
 		components: {
