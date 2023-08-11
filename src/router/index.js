@@ -1,7 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import Login from '../components/backup/Login.vue'
-import Doctor from '../components/backup/Doctor.vue'
-import Dept from '../components/backup/Dept.vue'
+import Login from '../components/index/Login.vue'
+import doctorList from "@/components/backup/DoctorList.vue";
 
 const routes = [
   {
@@ -10,20 +9,9 @@ const routes = [
     component: Login
   },
   {
-    path: '/doctors',
-    name: 'doctors',
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: Doctor
-  },
-  {
-    path: '/depts',
-    name: 'depts',
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: Dept
+    path:'/test',
+    name:'test',
+    component: doctorList
   }
 ]
 

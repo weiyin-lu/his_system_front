@@ -27,6 +27,7 @@
 
 <script>
 	import axios from 'axios'
+  import http from "@/axios/http";
 	export default {
 		name: "DoctorList",
 		data() {
@@ -44,7 +45,7 @@
 		methods: {
 			//查询所有医生
 			getlist() {
-				axios.get("http://localhost:8000/doctors/")
+				http.get("/doctors/")
 					.then(response => {
 						console.log(response.data)
 						if (response.data.code == "SUCCESS") {
