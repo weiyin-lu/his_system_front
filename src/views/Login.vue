@@ -44,25 +44,23 @@ export default {
   },
   methods: {
     login() {
-		// 修改验证表单为loginForm
       this.$refs.loginForm.validate(
-          valid => {
-            if (valid) {
-              //   如果表单验证通过，执行axios请求
-              axios.post("http://localhost:8000/auth/", this.loginForm)
-                  .then(response => {
-                    if(response.data.code == "SUCCESS") {
-                      // 把token写入到sessionstorage
-                      sessionStorage.setItem("token",response.data.data)
-                      this.$message.success("登录成功")
-					  this.$router.push("/doctors")
-                    } else {
-                      sessionStorage.setItem("token","")
-                      this.$message.error("登录失败，" + response.data.msg)
-                    }
-                  })
-            }
-          })
+        valid => {
+          if (valid) {
+            //   如果表单验证通过，执行axios请求
+            axios.post("http://localhost:8000/auth/", this.loginForm)
+                .then(response => {
+                  if(response.data.code == "SUCCESS") {
+                    // 把token写入到sessionstorage
+                    sessionStorage.setItem("token",response.data.data)
+                    this.$message.success("登录成功")
+                    this.$router.push("/doctors")
+                  } else {
+                    this.$message.error("登录失败，" + response.data.msg)
+                  }
+                })
+          }
+        })
     }
   }
 }
