@@ -5,7 +5,7 @@
         <el-row>
           <span style="text-align:left;float:left;margin-top: 7px">
             <el-tag size="medium" style="width: 250px;background-color: lightblue">
-              当前患者:{{presentPatient.pName}}</el-tag>
+              当前患者:{{ patientInfo.pName }}</el-tag>
           </span>
           <span style="float:right">
             <el-button style="background-color: #409EFF" @click="selectRefresh">
@@ -59,18 +59,22 @@
                 <span style="margin-right: 15px"><el-button @click="show">{{hit}}</el-button></span>
                 <span>
                   <el-tag size="medium" style="width: 400px;background-color: rgba(0,0,0,0.12)">
-                    {{presentPatient.message}}</el-tag>
+                    {{ patientInfo.message }}</el-tag>
                 </span>
           </div>
           <el-tabs v-model="page" @tab-click="click" type="border-card">
             <!-- ------------------------------------------门诊病历首页部分------------------------------------------- -->
-            <el-tab-pane name="病历首页" label="病历首页"></el-tab-pane>
+              <el-tab-pane name="1" label="病历首页">
+                <router-view />
+              </el-tab-pane>
             <!-- ------------------------------------------------检查申请部分--------------------------------------------- -->
-            <el-tab-pane name="检查申请" label="检查申请"></el-tab-pane>
+              <el-tab-pane name="2" label="检查申请">
+                <router-view />
+              </el-tab-pane>
             <!-- -----------------------------------------------门诊确诊界面-------------------------------------------------------------- -->
-            <el-tab-pane name="门诊确诊" label="门诊确诊"></el-tab-pane>
+            <el-tab-pane name="3" label="门诊确诊"></el-tab-pane>
             <!-- ----------------------------------------------------成药处方界面---------------------------------------------- -->
-            <el-tab-pane name="成药处方" label="药品处方"></el-tab-pane>
+            <el-tab-pane name="4" label="药品处方"></el-tab-pane>
           </el-tabs>
         </el-main>
       </el-container>
@@ -82,18 +86,16 @@
 <script>
 
 import http from "@/axios/http";
-import Login from "@/components/index/Login.vue";
 import {Refresh} from "@element-plus/icons-vue";
 
 export default {
   name: 'OutDoctorMain',
   components: {
-    Refresh,
-    Login
+    Refresh
   },
   data(){
     return {
-      page:'病例首页',
+      page:'1',
       input:'',
       pName:'',
       hit:'隐藏患者栏',
@@ -103,8 +105,10 @@ export default {
       tag:"患者",
       // 患者列表
       table1Data: [],
-      // 当前选择的患者信息
-      presentPatient:{
+      // 当前选择的患者的全部信息
+      presentPatient:{},
+      // 当前选择的患者展示信息
+      patientInfo:{
         message: '待选择患者',
         pName: '等待选择...',
       },
@@ -120,8 +124,9 @@ export default {
       column.index = columnIndex;
     },
     cellClick(row){
-      this.presentPatient.pName= row.name;
-      this.presentPatient.message =
+      this.presentPatient = this.table1Data[row.index]
+      this.patientInfo.pName= row.name;
+      this.patientInfo.message =
           '病历号: '+ row.recordId+' | 姓名：'+row.name+' | 年龄：'+row.age+' | 性别：'+row.gender
     },
     selectRefresh(){
@@ -141,28 +146,27 @@ export default {
         this.hit='显示患者栏';
       }
     },
+    // 当el-tab受到点击，切换子路由
     click(tab){
-      if(tab.name==='病历首页'){
-        this.$router.push({path:'/Record'})
+      if(tab.props.name=='1'){
+        this.$router.push('/outdoctor/medrecord')
       }
-      else if(tab.name==='检查申请'){
-        this.$router.push({path:'/Check'});
+      else if(tab.props.name=='2'){
+        this.$router.push('/outdoctor/checkout');
       }
-      else if(tab.name==='门诊确诊'){
-        this.$router.push({path:'/Confirm'});
+      else if(tab.props.name=='3'){
+        // this.$router.push({path:'/Confirm'});
       }
-      else if(tab.name==='药品处方'){
-        this.$router.push({path:'/Wmedicine'});
+      else if(tab.props.name=='4'){
+        // this.$router.push({path:'/medicine'});
       }
-
     },
 
   },
   // 在页面初始化时访问的数据
-  created: function (){
+  created() {
     let _this = this;
-    const info = JSON.parse(sessionStorage.getItem('userinfo'))
-    console.log(info)
+    let info = JSON.parse(sessionStorage.getItem('userinfo'))
     http.get('/outdoctors/patient/' + info.docId).then(function (resp){
       _this.table1Data = resp.data.data;
     });
