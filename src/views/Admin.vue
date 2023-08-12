@@ -1,10 +1,12 @@
 <template>
-$END$
+
+  <router-view></router-view>
 </template>
 
 <script>
+import axios from "axios";
 export default {
-name: "Admin"
+  name: "Admin",
 }
 </script>
 

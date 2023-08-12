@@ -203,6 +203,8 @@
 </template>
 
 <script>
+import axios from "axios";
+
     export default {
         name: "UserManage",
         data() {
@@ -213,8 +215,8 @@
                 pwd:'',
                 /*当前用户*/
                 user:'',
-                returnimg: require('../assets/返回.png'),
-                quitimg: require('../assets/+退出.png'),
+                returnimg: require('@/assets/返回.png'),
+                quitimg: require('@/assets/+退出.png'),
                 dialogFormVisible: false,
                 /*搜索使用用户名*/
                 docname:'',
@@ -258,7 +260,7 @@
             }
         },
         mounted(){
-          this.loaddocs();
+          // this.loaddocs();
         },
         methods: {
           /*获取全部用户 科室信息*/
@@ -528,7 +530,7 @@
             },
           /*返回管理员主界面*/
             returnmain(){
-                this.$router.replace({path: '/hh'});
+                this.$router.replace({path: '/admin'});
             },
           /*退出*/
             logout(){

@@ -121,14 +121,15 @@
 </template>
 
 <script>
+import axios from "axios";
     export default {
         name: "DeptManage",
         data() {
             return {
               /*当前用户*/
                 user:'',
-                returnimg: require('../assets/返回.png'),
-                quitimg: require('../assets/+退出.png'),
+                returnimg: require('@/assets/返回.png'),
+                quitimg: require('@/assets/+退出.png'),
                 dialogFormVisible: false,
               /*显示用的部门信息*/
                 depts: [],
@@ -147,7 +148,7 @@
             }
         },
         mounted () {
-            this.loadDepts();
+            // this.loadDepts();
         },
         methods: {
           /*获取全部科室信息*/
@@ -297,7 +298,7 @@
             },
           /*返回主界面*/
             returnmain(){
-                this.$router.replace({path: '/hh'});
+                this.$router.replace({path: '/admin'});
             },
           /*退出*/
             logout(){
