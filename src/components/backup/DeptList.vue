@@ -1,25 +1,48 @@
 <template>
 	<div id="app">
-		<el-button type="primary" @click="getlist()">查询</el-button>
-		<el-button type="primary" @click="isaddshow = true">添加</el-button>
-		<el-table :data="deptlist" stripe style="width: 100%">
-			<el-table-column prop="deptName" label="科室名" width="180" />
-			<el-table-column prop="deptType" label="科室类型" width="180" />
-			<el-table-column prop="deptFunc" label="科室从属" width="180" />
+		<!--  顶部导航条  -->
+		<el-page-header :icon="null" @back="onback" style="padding: 20px;">
+			<template #content>
+				<div class="flex items-center">
+					<el-avatar :size="32" class="mr-3" src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png" />
+					<span class="text-large font-600 mr-3"> Title </span>
+					<span class="text-sm mr-2" style="color: var(--el-text-color-regular)">
+						Sub title
+					</span>
+				</div>
+			</template>
+			<template #extra>
+				<div class="flex items-center">
+					<el-button type="primary" class="ml-2" @click="logout">退出</el-button>
+				</div>
+			</template>
+		</el-page-header>
+
+		<!--添加科室-->
+		<el-button type="primary" @click="isaddshow = true">添加科室</el-button>
+
+		<!--科室列表表格-->
+		<el-table :data="deptlist" stripe style="width: 100%;height: 800px;">
+			<!--  对应字段-->
+			<el-table-column type="index" label="索引号码" width="180" />
+			<el-table-column prop="deptId" label="科室编码" width="180" />
+			<el-table-column prop="deptName" label="科室名称" width="180" />
+			<el-table-column prop="deptType" label="科室分类" width="180" />
+			<el-table-column prop="deptFunc" label="科室类型" width="180" />
 
 			<el-table-column align="right">
 				<template #header>
 					<!-- 模糊搜索输入框 -->
-					<el-input v-model="search.deptName" size="small" placeholder="Type to deptName" />
-					<el-input v-model="search.deptType" size="small" placeholder="Type to deptType" />
-					<el-input v-model="search.deptFunc" size="small" placeholder="Type to deptFunc" />
-					<el-button size="small" @click="getbylist()">查询</el-button>
+					<el-autocomplete :fetch-suggestions="deptnameselect" style="width: 260px;" v-model="search.deptName" size="small" placeholder="科室名称" />
+					<el-input style="width: 260px;" v-model="search.deptType" size="small" placeholder="科室分类" />
+					<el-input style="width: 260px;" v-model="search.deptFunc" size="small" placeholder="科室类型" />
+					<el-button style="width: 100px;" size="small" @click="getbylist()">查询</el-button>
 				</template>
 				<template #default="scope">
 					<!-- 获取这一行数据进行修改 -->
-					<el-button size="small" @click="toupdateline(scope.row)">Edit</el-button>
+					<el-button size="small" @click="toupdateline(scope.row)">修改</el-button>
 					<!-- 获取这一行id到后端删除 -->
-					<el-button size="small" type="danger" @click="deleteone(scope.row.deptId)">Delete</el-button>
+					<el-button size="small" type="danger" @click="deleteone(scope.row.deptId)">删除</el-button>
 				</template>
 			</el-table-column>
 		</el-table>
@@ -67,7 +90,7 @@
 </template>
 
 <script>
-	import axios from 'axios'
+	import http from "@/axios/http";
 	export default {
 		name: "DeptList",
 		data() {
@@ -94,12 +117,15 @@
 				}
 			}
 		},
+		mounted() {
+			this.getlist()
+		},
 		methods: {
 			getlist() {
-				axios.get("http://localhost:8000/dept/")
+				http.get("/depts/")
 					.then(response => {
 						// console.log(response.data)
-						if (response.data.code == "SUCCESS") {
+						if (response.data.code === "SUCCESS") {
 							this.deptlist = response.data.data
 							this.AllArray = response.data.data
 						} else {
@@ -108,6 +134,7 @@
 						}
 					})
 			},
+
 			// 使用前端做的模糊查询
 			getbylist() {
 
@@ -119,10 +146,15 @@
 
 				this.deptlist = this.newArray
 			},
+
 			// 传给后端id删除这一行
 			deleteone(id) {
-				axios.delete("http://localhost:8000/dept/" + id)
-					.then(response => {
+				this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
+					confirmButtonText: '确定',
+					cancelButtonText: '取消',
+					type: 'warning'
+				}).then(() => {
+					http.delete("/depts/" + id).then(response => {
 						// console.log(response.data)
 						if (response.data.code == "SUCCESS") {
 							this.$message.success("删除成功")
@@ -131,45 +163,93 @@
 							this.$message.error(response.data.msg)
 						}
 					})
+				}).catch(() => {
+					this.$message({
+						type: 'info',
+						message: '已取消删除'
+					});
+				})
 			},
+
 			// 因赋值问题单独做的
 			toupdateline(updateline) {
-				this.isupshow=true
+				this.isupshow = true
 				/**
 				 * 新开辟一段空间
 				 * 因为前段引用类型数据会赋值地址
 				 * 所以修改后不点击确定数据也会改变
 				 * 但数据库中的数据不变
-				*/
-				this.updateline=JSON.parse(JSON.stringify(updateline))
+				 */
+				this.updateline = JSON.parse(JSON.stringify(updateline))
 			},
+
 			// 修改后的值传入后端修改
 			updateone() {
-				axios.put("http://localhost:8000/dept/update", this.updateline)
+				http.put("/depts/update", this.updateline)
 					.then(response => {
 						// console.log(response.data)
 						if (response.data.code == "SUCCESS") {
 							this.$message.success("修改成功")
 							this.getlist()
-							this.isupshow=false
+							this.isupshow = false
 						} else {
 							this.$message.error(response.data.msg)
 						}
 					})
 			},
+
 			// 添加数据传入后端添加
 			addone() {
-				axios.post("http://localhost:8000/dept/add", this.addline)
+				http.post("/depts/add", this.addline)
 					.then(response => {
 						// console.log(response.data)
 						if (response.data.code == "SUCCESS") {
 							this.$message.success("添加成功")
 							this.getlist()
-							this.isaddshow=false
+							this.isaddshow = false
 						} else {
 							this.$message.error(response.data.msg)
 						}
 					})
+			},
+
+      //点击输入框时提示科室名的值
+      deptnameselect(queryString,cb) {
+        this.newArray = this.AllArray.map(item=>{
+          item.value = item.deptName;
+          return item;
+        });
+        console.log(this.newArray)
+        let results = queryString ? this.newArray.filter((name) => name.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0) : this.newArray;
+        // 调用 callback 返回建议列表的数据
+        cb(results);
+      },
+
+			// 退回管理页面
+			onback() {
+				this.$router.replace({
+					path: '/admin'
+				});
+			},
+
+			// 退出登录
+			logout() {
+				this.$confirm('确定退出？', '提示', {
+					confirmButtonText: '确定',
+					cancelButtonText: '取消',
+					type: 'warning'
+				}).then(() => {
+					window.sessionStorage.removeItem("token");
+          window.sessionStorage.removeItem("userinfo");
+					this.$router.replace({
+						path: '/'
+					})
+				}).catch(() => {
+					this.$message({
+						type: 'info',
+						message: '已取消退出'
+					});
+				});
 			}
 		},
 	}

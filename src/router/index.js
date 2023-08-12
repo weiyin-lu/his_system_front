@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import Login from '../components/index/Login.vue'
 import doctorList from "@/components/backup/DoctorList.vue";
+import DeptList from "@/components/backup/DeptList.vue";
 //基础信息
 import Admin from '@/views/Admin.vue'
 import AdminMain from "@/components/admin/AdminMain.vue";
@@ -26,11 +27,11 @@ const routes = [
         },
         {
           path: 'dept',
-          component: AdminDept
+          component: DeptList
         },
         {
           path: 'doc',
-          component: AdminDoctor
+          component: doctorList
         },
         {
           path: 'reg',
