@@ -37,7 +37,6 @@
 </template>
 
 <script>
-    import axios from "axios";
     import http from "@/axios/http"
     export default {
         name: 'Login',
@@ -58,8 +57,6 @@
                   { min: 6, message: '长度不小于6个字符' }
                 ],
               },
-              // 从token解析的来的登录用户相关信息
-              loginInfo : {}
             }
         },
         methods: {
@@ -74,26 +71,25 @@
                           if(response.data.code == "SUCCESS") {
                             // 登录成功的情况下：
                             // 1. 把token写入到sessionstorage
-                            // 2. 把token二次传递回后端请求token的解析信息，并存入loginInfo
+                            // 2. 把token二次传递回后端请求token的解析信息，存入sessionstorage
                             //    因为使用了post方式传递单独参数，因此需要修改header
-                            // 3. 从解析数据里判断该用户的权限，直接跳转到对应工作站 （
+                            // 3. 从解析数据里判断该用户的权限，直接跳转到对应工作站
 
                             // 1.
                             console.log(response.data.data)
                             sessionStorage.setItem("token",response.data.data)
                             this.$message.success("登录成功")
                             // 2.
-                            const tokenstring = response.data.data
                             http.put("/auth/", response.data.data,{
                               headers: {
                                 'Content-Type' : 'text/plain'
                               }
                             })
                             .then(info => {
-                              this.loginInfo = info.data.data
+                              sessionStorage.setItem('userinfo',JSON.stringify(info.data.data));
                             })
                             // 3.
-                            // 未完成，需要等待其他模块实装 卢子昂_2023-08-11_19:55）
+                            // 未完成，需要等待其他模块实装 卢子昂_2023-08-11_19:55
                           } else {
                             this.$message.error("登录失败，" + response.data.msg)
                           }
