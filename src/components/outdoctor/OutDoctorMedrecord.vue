@@ -138,9 +138,11 @@
 </template>
 
 <script>
+import store from '@/store/index'
+
 export default {
   name: "OutDoctorMedrecord",
-  props: ['presentPatient'],
+  inject: ["reload"],
   data() {
     return {
       // 当前选择的病人信息，通过父级获得
@@ -164,13 +166,13 @@ export default {
       }
     }
   },
-  mounted() {
+  created() {
     let info = JSON.parse(sessionStorage.getItem('userinfo'))
+    let patient = this.$store.state.presentPatient
     this.medrecord.docId = info.docId
     this.medrecord.registerId = info.regId
-    if (present != undefined) {
-      this.presentPatient = JSON.parse(present)
-    }
+    this.medrecord.recordId = patient.recordId
+    this.presentPatient = patient
   }
 }
 </script>

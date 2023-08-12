@@ -64,17 +64,15 @@
           </div>
           <el-tabs v-model="page" @tab-click="click" type="border-card">
             <!-- ------------------------------------------门诊病历首页部分------------------------------------------- -->
-              <el-tab-pane name="1" label="病历首页">
-                <router-view />
-              </el-tab-pane>
+              <el-tab-pane name="1" label="病历首页"></el-tab-pane>
             <!-- ------------------------------------------------检查申请部分--------------------------------------------- -->
               <el-tab-pane name="2" label="检查申请">
-                <router-view />
               </el-tab-pane>
             <!-- -----------------------------------------------门诊确诊界面-------------------------------------------------------------- -->
             <el-tab-pane name="3" label="门诊确诊"></el-tab-pane>
             <!-- ----------------------------------------------------成药处方界面---------------------------------------------- -->
             <el-tab-pane name="4" label="药品处方"></el-tab-pane>
+            <router-view :key="timer"/>
           </el-tabs>
         </el-main>
       </el-container>
@@ -112,9 +110,9 @@ export default {
         message: '待选择患者',
         pName: '等待选择...',
       },
+      timer:''
     }
   },
-
   methods :{
     editTagMessage(){
       this.tagMessage = '患者名:';
@@ -123,12 +121,22 @@ export default {
       row.index = rowIndex;
       column.index = columnIndex;
     },
+    // 选中列表中的某一患者后更新信息
+    // 1. 根据选中的患者填入父组件信息
+    // 2. 将选中患者的信息存入store
+    // 3.更新子组件
     cellClick(row){
+      // 1.
       this.presentPatient = this.table1Data[row.index]
       this.patientInfo.pName= row.name;
       this.patientInfo.message =
           '病历号: '+ row.recordId+' | 姓名：'+row.name+' | 年龄：'+row.age+' | 性别：'+row.gender
+      // 2.
+      this.$store.commit("persentPatient",this.presentPatient)
+      // 3.
+      this.timer = new Date().getTime()
     },
+    // 刷新提示
     selectRefresh(){
       this.$message({
         message:'患者选择刷新按钮,重新执行查询操作',
@@ -136,6 +144,7 @@ export default {
       });
       location.reload();
     },
+    // 患者栏按钮
     show(){
       if(this.showSide===false){
         this.showSide=true;
@@ -161,12 +170,13 @@ export default {
         // this.$router.push({path:'/medicine'});
       }
     },
-
   },
   // 在页面初始化时访问的数据
+  // 1. 从sessionstorage中获得登录账户的基本信息
+  // 2. 查询所有病人的信息
   created() {
     let _this = this;
-    let info = JSON.parse(sessionStorage.getItem('userinfo'))
+    let info = JSON.parse(sessionStorage.getItem("userinfo"))
     http.get('/outdoctors/patient/' + info.docId).then(function (resp){
       _this.table1Data = resp.data.data;
     });
