@@ -163,7 +163,7 @@
 				}).then(() => {
 					http.delete("/depts/" + id).then(response => {
 						// console.log(response.data)
-						if (response.data.code == "SUCCESS") {
+						if (response.data.code === "SUCCESS") {
 							this.$message.success("删除成功")
 							this.getlist()
 						} else {
@@ -192,32 +192,51 @@
 
 			// 修改后的值传入后端修改
 			updateone() {
-				http.put("/depts/update", this.updateline)
-					.then(response => {
-						// console.log(response.data)
-						if (response.data.code == "SUCCESS") {
-							this.$message.success("修改成功")
-							this.getlist()
-							this.isupshow = false
-						} else {
-							this.$message.error(response.data.msg)
-						}
-					})
+        if(this.addline.deptName.trim().length < 1 ||
+            this.addline.deptType.trim().length < 1 ||
+            this.addline.deptFunc.trim().length < 1 ){
+          this.$message({
+            type: 'error',
+            message: '请完整填入信息！'
+          });
+        }else{
+          http.put("/depts/update", this.updateline)
+              .then(response => {
+                // console.log(response.data)
+                if (response.data.code === "SUCCESS") {
+                  this.$message.success("修改成功")
+                  this.getlist()
+                  this.isupshow = false
+                } else {
+                  this.$message.error(response.data.msg)
+                }
+              })
+        }
+
 			},
 
 			// 添加数据传入后端添加
 			addone() {
-				http.post("/depts/add", this.addline)
-					.then(response => {
-						// console.log(response.data)
-						if (response.data.code == "SUCCESS") {
-							this.$message.success("添加成功")
-							this.getlist()
-							this.isaddshow = false
-						} else {
-							this.$message.error(response.data.msg)
-						}
-					})
+        if(this.addline.deptName.length < 1 || this.addline.deptName === " "||
+            this.addline.deptType.length < 1 || this.addline.deptType === " "||
+            this.addline.deptFunc.length < 1 ||this.addline.deptFunc === " "){
+          this.$message({
+            type: 'error',
+            message: '请完整填入信息！'
+          });
+        }else{
+          http.post("/depts/add", this.addline)
+              .then(response => {
+                // console.log(response.data)
+                if (response.data.code === "SUCCESS") {
+                  this.$message.success("添加成功")
+                  this.getlist()
+                  this.isaddshow = false
+                } else {
+                  this.$message.error(response.data.msg)
+                }
+              })
+        }
 			},
 
       //点击输入框时提示科室名的值

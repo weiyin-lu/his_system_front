@@ -41,28 +41,73 @@
 					<el-button size="small" @click="getbylist()">查询</el-button>
 				</template>
 				<template #default="scope">
-					<el-button size="small" >修改</el-button>
+					<el-button size="small" @click="toupdateline(scope.row)" >修改</el-button>
 					<el-button size="small" type="danger" @click="deleteone(scope.row.docId)">删除</el-button>
 				</template>
 			</el-table-column>
 		</el-table>
 
-    <!-- 点击添加弹出添加框 -->
-    <el-dialog v-model="isaddshow" title="添加" width="30%" center>
-      <el-form :model="addline" label-position="right" label-width="100px" style="max-width: 460px">
+    <!-- 点击修改弹出修改框 -->
+    <el-dialog v-model="isupshow" title="添加" width="30%" center>
+      <el-form :model="updateline" label-position="right" label-width="100px" style="max-width: 460px">
+        <el-form-item label="用户名" prop="name">
+          <el-input v-model="updateline.name" />
+        </el-form-item>
+        <el-form-item label="密码" prop="password">
+          <el-input v-model="updateline.password" />
+        </el-form-item>
+        <el-form-item label="用户类型" prop="userType">
+          <el-input v-model="updateline.userType" />
+        </el-form-item>
+        <el-form-item label="职称" prop="title">
+          <el-input v-model="updateline.title" />
+        </el-form-item>
         <el-form-item label="科室名" prop="deptName">
-          <el-input v-model="addline.deptName" />
+          <el-autocomplete style="width: 360px" :fetch-suggestions="deptnameselect" v-model="keshiline.deptName" @input="selectbykeshi" />
+          <span>科室分类：{{keshiline.deptType}}</span>
+          <span style="margin-left: 15px">科室类型：{{keshiline.deptFunc}}</span>
+
         </el-form-item>
-        <el-form-item label="科室类型" prop="deptType">
-          <el-input v-model="addline.deptType" />
-        </el-form-item>
-        <el-form-item label="科室从属" prop="deptFunc">
-          <el-input v-model="addline.deptFunc" />
+        <el-form-item label="挂号等级" prop="regId">
+          <el-autocomplete style="width: 360px" :fetch-suggestions="regnameselect" v-model="regline.regLevel" @input="selectbyreg" />
         </el-form-item>
       </el-form>
       <template #footer>
 				<span class="dialog-footer">
-					<el-button type="primary" @click="addone()">确定</el-button>
+					<el-button type="primary" @click="updateone">确定</el-button>
+					<el-button @click="isupshow = false;">取消</el-button>
+				</span>
+      </template>
+    </el-dialog>
+
+    <!-- 点击添加弹出添加框 -->
+    <el-dialog v-model="isaddshow" title="添加" width="30%" center>
+      <el-form :model="addline" label-position="right" label-width="100px" style="max-width: 460px">
+        <el-form-item label="用户名" prop="name">
+          <el-input v-model="addline.name" />
+        </el-form-item>
+        <el-form-item label="密码" prop="password">
+          <el-input v-model="addline.password" />
+        </el-form-item>
+        <el-form-item label="用户类型" prop="userType">
+          <el-input v-model="addline.userType" />
+        </el-form-item>
+        <el-form-item label="职称" prop="title">
+          <el-input v-model="addline.title" />
+        </el-form-item>
+        <el-form-item label="科室名" prop="deptName">
+          <el-autocomplete style="width: 360px" :fetch-suggestions="deptnameselect" v-model="keshiline.deptName" @input="selectbykeshi" />
+          <span>科室分类：{{keshiline.deptType}}</span>
+          <span style="margin-left: 15px">科室类型：{{keshiline.deptFunc}}</span>
+
+        </el-form-item>
+        <el-form-item label="挂号等级" prop="regId">
+          <el-autocomplete style="width: 360px" :fetch-suggestions="regnameselect" v-model="regline.regLevel" @input="selectbyreg" />
+        </el-form-item>
+      </el-form>
+      <template #footer>
+				<span class="dialog-footer">
+					<el-button type="primary" @click="addone">确定</el-button>
 					<el-button @click="isaddshow = false;">取消</el-button>
 				</span>
       </template>
@@ -90,7 +135,7 @@
         // 用于显示的对象
 				doctorlist: [],
         deptlist:[],
-
+        reglist:[],
 
         // 用于方法调用的对象
 				newArray: [],
@@ -98,7 +143,15 @@
 
         // 修改框是否显示
         isupshow: false,
-        updateline: [],
+        updateline: {
+          docId: "",
+          password: "",
+          name: "",
+          userType:"",
+          title:"",
+          deptId:"",
+          regId:""
+        },
 
         // 添加框是否显示
         isaddshow: false,
@@ -109,6 +162,14 @@
           title:"",
           deptId:"",
           regId:""
+        },
+        keshiline: {
+          deptName: "",
+          deptType: "",
+          deptFunc: ""
+        },
+        regline: {
+          regLevel: ""
         }
 
 			}
@@ -117,6 +178,7 @@
     mounted() {
       this.user=JSON.parse(sessionStorage.getItem("userinfo"))
       this.getdeptlist()
+      this.getregisterlist()
       this.getlist()
 
     },
@@ -127,7 +189,7 @@
 			getlist() {
 				http.get("/doctors/")
 					.then(response => {
-						console.log(response.data)
+						// console.log(response.data)
 						if (response.data.code == "SUCCESS") {
 							this.doctorlist = response.data.data
 							this.AllArray = response.data.data
@@ -152,6 +214,20 @@
             })
       },
 
+      //查询科室列表
+      getregisterlist() {
+        http.get("/registers/")
+            .then(response => {
+              // console.log(response.data)
+              if (response.data.code === "SUCCESS") {
+                this.reglist = response.data.data
+              } else {
+                this.$message.error("身份过期，请重新登录")
+                this.$router.push("/")
+              }
+            })
+      },
+
 			//模糊查询
 			getbylist() {
 				
@@ -159,7 +235,7 @@
 
 				this.newArray=this.newArray.filter(array => array.userType.includes(this.search.userType))
 
-				this.newArray=this.newArray.filter(array => this.search.title==""||array.title!=null&&array.title.includes(this.search.title))
+				this.newArray=this.newArray.filter(array => this.search.title === ""||array.title!=null&&array.title.includes(this.search.title))
 
 				this.doctorlist=this.newArray
 				// axios.post("http://localhost:8000/doctors/",this.search)
@@ -183,7 +259,7 @@
         }).then(() => {
           http.delete("/doctors/" + id).then(response => {
             // console.log(response.data)
-            if (response.data.code == "SUCCESS") {
+            if (response.data.code === "SUCCESS") {
               this.$message.success("删除成功")
               this.getlist()
             } else {
@@ -197,6 +273,73 @@
           });
         })
 			},
+
+      // 添加数据传入后端添加
+      addone() {
+        if(this.addline.name.trim().length < 1||
+            this.addline.userType.trim().length < 1||
+          this.addline.deptId.length < 1||
+            this.addline.password.length < 6){
+          this.$message({
+            type: 'error',
+            message: '请完整填入信息！'
+          });
+        }else{
+          http.put("/doctors/add", this.addline)
+              .then(response => {
+                // console.log(response.data)
+                if (response.data.code === "SUCCESS") {
+                  this.$message.success("添加成功")
+                  this.getlist()
+                  this.isaddshow = false
+                } else {
+                  this.$message.error(response.data.msg)
+                }
+              })
+        }
+      },
+
+      // 点击修改按钮操作
+      toupdateline(updateline) {
+        this.updateline.docId=updateline.docId
+        this.updateline.name=updateline.name
+        this.updateline.userType=updateline.userType
+        this.updateline.title=updateline.title
+        this.keshiline.deptName=updateline.deptName
+        this.regline.regLevel=updateline.regName
+        this.selectbyreg(updateline.regName)
+        this.selectbykeshi(updateline.deptName)
+
+        this.isupshow = true
+
+      },
+
+      // 修改后的值传入后端修改
+      updateone() {
+
+        if(this.updateline.name.trim().length < 1||
+            this.updateline.userType.trim().length < 1||
+            this.updateline.deptId.length < 1||
+            this.updateline.password.length < 6 ){
+          this.$message({
+            type: 'error',
+            message: '请完整填入信息！'
+          });
+        }else{
+          http.put("/doctors/update", this.updateline)
+              .then(response => {
+                // console.log(response.data)
+                if (response.data.code === "SUCCESS") {
+                  this.$message.success("修改成功")
+                  this.getlist()
+                  this.isupshow = false
+                } else {
+                  this.$message.error(response.data.msg)
+                }
+              })
+        }
+
+      },
 
       //点击输入框时提示用户名的值
       doctornameselect(queryString,cb) {
@@ -235,6 +378,60 @@
         let results = queryString ? this.newArray.filter((title) => title.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0) : this.newArray;
         // 调用 callback 返回建议列表的数据
         cb(results);
+      },
+
+      //点击输入框时提示科室名的值
+      deptnameselect(queryString,cb) {
+        this.newArray = this.deptlist.map(item=>{
+          item.value = item.deptName;
+          return item;
+        });
+        let results = queryString ? this.newArray.filter((name) => name.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0) : this.newArray;
+        // 调用 callback 返回建议列表的数据
+        cb(results);
+      },
+
+      //点击输入框时提示科室名的值
+      regnameselect(queryString,cb) {
+        this.newArray = this.reglist.map(item=>{
+          item.value = item.regLevel;
+          return item;
+        });
+        // 去除数组中重复值
+        this.newArray=this.newArray.filter((item,index) => this.newArray.findIndex(type => type.regLevel === item.regLevel) === index)
+
+        let results = queryString ? this.newArray.filter((name) => name.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0) : this.newArray;
+        // 调用 callback 返回建议列表的数据
+        cb(results);
+      },
+
+      // 添加或修改的科室发生变化时
+      selectbykeshi(deptName) {
+        let newarray=this.deptlist.filter(array => array.deptName === deptName)
+        if (newarray.length === 0) {
+          this.keshiline.deptType=""
+          this.keshiline.deptFunc=""
+          this.addline.deptId=""
+          this.updateline.deptId=""
+        }else {
+          this.keshiline.deptType=newarray[0].deptType
+          this.keshiline.deptFunc=newarray[0].deptFunc
+          this.addline.deptId=newarray[0].deptId
+          this.updateline.deptId=newarray[0].deptId
+        }
+      },
+
+      // 添加或修改的挂号等级发生变化时
+      selectbyreg(regName) {
+        let newarray=this.reglist.filter(array => array.regLevel === regName)
+        if (newarray.length === 0) {
+          this.addline.regId=""
+          this.updateline.regId=""
+
+        }else {
+          this.addline.regId=newarray[0].regId
+          this.updateline.regId=newarray[0].regId
+        }
       },
 
       // 退回管理页面

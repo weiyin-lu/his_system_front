@@ -87,21 +87,25 @@
               }
           },
           methods:{
-              logout(){
-                  this.$confirm('确定退出？', '提示', {
-                      confirmButtonText: '确定',
-                      cancelButtonText: '取消',
-                      type: 'warning'
-                  }).then(() => {
-                      window.sessionStorage.removeItem("user");
-                      this.$router.replace({path: '/'})
-                  }).catch(() => {
-                      this.$message({
-                          type: 'info',
-                          message: '已取消退出'
-                      });
-                  });
-              }
+            // 退出登录
+            logout() {
+              this.$confirm('确定退出？', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning'
+              }).then(() => {
+                window.sessionStorage.removeItem("token");
+                window.sessionStorage.removeItem("userinfo");
+                this.$router.replace({
+                  path: '/'
+                })
+              }).catch(() => {
+                this.$message({
+                  type: 'info',
+                  message: '已取消退出'
+                });
+              });
+            },
           }
       }
   </script>
