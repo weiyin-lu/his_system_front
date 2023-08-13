@@ -99,6 +99,8 @@
 </template>
 
 <script>
+    import http from "@/axios/http";
+
     export default {
         data(){
             return{
@@ -124,7 +126,7 @@
           },
             getDocInfoFuc(){
                 let _this=this
-                axios.get("http://localhost:20910/api/getDocInfo/"+this.$store.state.docId,{
+                http.get("http://localhost:20910/api/getDocInfo/"+this.$store.state.docId,{
                     DocId:this.$store.state.docId
                 }).then(resp=>{
                     if(resp && resp.data.code===200){
@@ -154,7 +156,7 @@
             },
             loaddip(){
                 let _this = this
-                axios.get('http://localhost:20910/api/display').then(resp => {
+              http.get('http://localhost:20910/api/display').then(resp => {
                     if (resp) {
                       console.log(resp.data)
                         _this.tableData = resp.data.result
@@ -172,7 +174,7 @@
                     this.$message.error("失败!未付费")
                 }
                 else if(row.payment===1&&row.takeMed===0){
-                    axios.post('http://localhost:20910/api/setMed0/'+row.id,data).then(resp => {
+                  http.post('http://localhost:20910/api/setMed0/'+row.id,data).then(resp => {
                         if (resp && resp.status === 200) {
                             this.$message({
                                 message:'成功',
@@ -188,7 +190,7 @@
             },
             search() {
                 if(this.name && !this.input && !this.value1){
-                    axios.get('http://localhost:20910/api/searchDispByName/'+this.name,{
+                  http.get('http://localhost:20910/api/searchDispByName/'+this.name,{
                         name:this.name
                     }).then(resp =>{
                         if(resp && resp.data.code === 200){
@@ -207,7 +209,7 @@
                     })
                 }
                 else if(this.input && !this.value1){
-                    axios.get('http://localhost:20910/api/searchDispById/'+this.input,{
+                  http.get('http://localhost:20910/api/searchDispById/'+this.input,{
                         patientId:this.input
                     }).then(resp =>{
                         if(resp && resp.data.code === 200){
@@ -227,7 +229,7 @@
                 }
                 else if(!this.input && this.value1){
 
-                    axios.get("http://localhost:20910/api/searchDispByTime/"+this.value1,{
+                  http.get("http://localhost:20910/api/searchDispByTime/"+this.value1,{
                         time:this.value1
                     }).then(resp=>{
                         if(resp && resp.data.code===200){
@@ -247,7 +249,7 @@
                 else if(this.input && this.value1){
                     console.log(this.value1)
                     console.log(this.input)
-                    axios.get("http://localhost:20910/api/searchDispByTimeAndId/"+this.value1+"/"+this.input,{
+                  http.get("http://localhost:20910/api/searchDispByTimeAndId/"+this.value1+"/"+this.input,{
                         time:this.value1,
                         recordId:this.input
                     }).then(resp=>{
