@@ -3,14 +3,41 @@
     <el-header style="text-align: right"> <!--页面头部-->
       <span style="float: left;font-size: 20px;">门诊挂号收费功能页面</span><!--头部最左侧显示当前页面名称-->
       <!--最右侧首先显示当前用户名称,由登陆界面传输当前用户信息,同时与右侧按钮通过margin-right保持一定距离-->
-      <span style="font-size: 15px; margin-right:15px">欢迎回来,{{userName}}</span>
+      <span style="font-size: 15px; margin-right:15px">欢迎回来,{{userInfo.name}}</span>
       <el-dropdown> <!--下拉框-->
         <el-button type="primary" style="height:40px; width:40px;" circle> <!--首先显示带有用户图标的按钮-->
-          <i class="el-icon-user-solid" circle style="margin-right: 15px"></i>
+          <el-icon color="#FFFFFF">
+            <User />
+          </el-icon>
         </el-button>
-        <el-dropdown-menu slot="dropdown"> <!--鼠标悬停在按钮上方时显示下拉菜单-->
-          <el-dropdown-item @click.native="addRoutes11">注销</el-dropdown-item><!--返回主界面-->
-        </el-dropdown-menu>
+        <template #dropdown>
+          <el-dropdown-menu>
+            <el-dropdown-item>
+              <div>
+                <b>基本信息</b>
+                <table>
+                  <tr>
+                    <td><b>姓名</b></td>
+                    <td>{{userInfo.name}}</td>
+                  </tr>
+                  <tr>
+                    <td><b>岗位</b></td>
+                    <td>{{userInfo.userType}}</td>
+                  </tr>
+                  <tr>
+                    <td><b>科室</b></td>
+                    <td>{{userInfo.deptType}}</td>
+                  </tr>
+                  <tr>
+                    <td><b>级别</b></td>
+                    <td>{{userInfo.regName}}</td>
+                  </tr>
+                </table>
+              </div>
+            </el-dropdown-item>
+            <el-dropdown-item divided @click.native="logout()">注销</el-dropdown-item>
+          </el-dropdown-menu>
+        </template>
       </el-dropdown>
     </el-header>
 
@@ -65,11 +92,8 @@ export default {
   },
   methods: {
     //确定跳转位置, ../router/index.js 中可修改路径对应信息
-    addRoutes1 () {
-      this.$router.push('/chargeHomePage')
-    },
     addRoutes2 () {
-      this.$router.push('/register')
+      this.$router.push('/outpatient/core')
     },
     addRoutes3 () {
       this.$router.push('/withdraw')
@@ -80,7 +104,12 @@ export default {
     addRoutes5 () {
       this.$router.push('/refund')
     },
-    addRoutes11 () {//用户注销时需弹出弹出框以确认是否返回登陆界面,而不是误操作
+    // 用户注销
+    // 1. 二次确认
+    // 2. 确认后，删除sessionstroage信息
+    // 3. 返回登录页
+    logout () {
+      // 1.
       this.$confirm('是否确认注销?', '提示', {
           cancelButtonText: '取消',
           confirmButtonText: '确定',
@@ -90,11 +119,15 @@ export default {
             type: 'success',
             message: '注销成功!'
           });
+          // 2.
+          sessionStorage.removeItem('userinfo')
+          sessionStorage.removeItem('token')
+          // 3.
           this.$router.push('/');
         });
     }
   },
-
+  // 初始化写入登录数据
   created(){
     this.userInfo = JSON.parse(sessionStorage.getItem("userinfo"))
     console.log(this.userInfo)

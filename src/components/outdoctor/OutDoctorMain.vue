@@ -55,13 +55,48 @@
       <el-container>
         <!-- -------------------------------------------------------------main部分--------------------------------------------------------- -->
         <el-main>
-          <div style="text-align: left">
-                <span style="margin-right: 15px"><el-button @click="show">{{hit}}</el-button></span>
-                <span>
+            <div style="text-align: right">
+              <span style="margin-right: 15px"><el-button @click="show">{{hit}}</el-button></span>
+              <span>
                   <el-tag size="medium" style="width: 400px;background-color: rgba(0,0,0,0.12)">
                     {{ patientInfo.message }}</el-tag>
                 </span>
-          </div>
+              <el-dropdown> <!--下拉框-->
+                <el-button type="primary" style="height:40px; width:40px;" circle> <!--首先显示带有用户图标的按钮-->
+                  <el-icon color="#FFFFFF">
+                    <User />
+                  </el-icon>
+                </el-button>
+                <template #dropdown>
+                  <el-dropdown-menu>
+                    <el-dropdown-item>
+                      <div>
+                        <b>基本信息</b>
+                        <table>
+                          <tr>
+                            <td><b>姓名</b></td>
+                            <td>{{userInfo.name}}</td>
+                          </tr>
+                          <tr>
+                            <td><b>岗位</b></td>
+                            <td>{{userInfo.userType}}</td>
+                          </tr>
+                          <tr>
+                            <td><b>科室</b></td>
+                            <td>{{userInfo.deptType}}</td>
+                          </tr>
+                          <tr>
+                            <td><b>级别</b></td>
+                            <td>{{userInfo.regName}}</td>
+                          </tr>
+                        </table>
+                      </div>
+                    </el-dropdown-item>
+                    <el-dropdown-item divided @click.native="logout()">注销</el-dropdown-item>
+                  </el-dropdown-menu>
+                </template>
+              </el-dropdown>
+            </div>
           <el-tabs v-model="page" @tab-click="click" type="border-card">
             <!-- ------------------------------------------门诊病历首页部分------------------------------------------- -->
               <el-tab-pane name="1" label="病历首页"></el-tab-pane>
@@ -110,6 +145,8 @@ export default {
         message: '待选择患者',
         pName: '等待选择...',
       },
+      // 当前登录医生的信息
+      userInfo: {},
       timer:''
     }
   },
@@ -124,7 +161,8 @@ export default {
     // 选中列表中的某一患者后更新信息
     // 1. 根据选中的患者填入父组件信息
     // 2. 将选中患者的信息存入store
-    // 3.更新子组件
+    // 3. 切换到问诊信息页
+    // 4. 刷新内容
     cellClick(row){
       // 1.
       this.presentPatient = this.table1Data[row.index]
@@ -134,15 +172,40 @@ export default {
       // 2.
       this.$store.commit("persentPatient",this.presentPatient)
       // 3.
+      this.$router.push('/outdoctor/medrecord')
+      this.page = '1'
+      // 4.
       this.timer = new Date().getTime()
     },
-    // 刷新提示
+    // 刷新提示消息
     selectRefresh(){
       this.$message({
         message:'患者选择刷新按钮,重新执行查询操作',
         type: 'success'
       });
       location.reload();
+    },
+    // 用户注销
+    // 1. 二次确认
+    // 2. 确认后，删除sessionstroage信息
+    // 3. 返回登录页
+    logout () {
+      // 1.
+      this.$confirm('是否确认注销?', '提示', {
+        cancelButtonText: '取消',
+        confirmButtonText: '确定',
+        type: 'warning'
+      }).then(() => {
+        this.$message({
+          type: 'success',
+          message: '注销成功!'
+        });
+        // 2.
+        sessionStorage.removeItem('userinfo')
+        sessionStorage.removeItem('token')
+        // 3.
+        this.$router.push('/');
+      });
     },
     // 患者栏按钮
     show(){
@@ -172,11 +235,14 @@ export default {
     },
   },
   // 在页面初始化时访问的数据
-  // 1. 从sessionstorage中获得登录账户的基本信息
+  // 1. 从sessionstorage中获得登录账户的基本信息，存入当前页对象里
   // 2. 查询所有病人的信息
   created() {
+    // 1.
     let _this = this;
     let info = JSON.parse(sessionStorage.getItem("userinfo"))
+    this.userInfo = info
+    // 2.
     http.get('/outdoctors/patient/' + info.docId).then(function (resp){
       _this.table1Data = resp.data.data;
     });
@@ -185,9 +251,6 @@ export default {
     'tag' :function (){
       if(this.tag==='患者'){
         this.tagMessage = '患者名:';
-      }
-      if(this.tag==='科室'){
-        this.tagMessage = '科室名:';
       }
     }
   }
