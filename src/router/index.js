@@ -8,12 +8,12 @@ import DeptList from "@/components/backup/DeptList.vue";
 import medicineMain from '@/components/medicine/MedicineMain.vue'
 import medicineCore from '@/components/medicine/MedicineCore.vue'
 import medicineManage from '@/components/medicine/MedicineManage.vue'
-//基础信息
 import Admin from '@/views/Admin.vue'
 import AdminMain from "@/components/admin/AdminMain.vue";
 import AdminDept from "@/components/admin/AdminDept.vue";
 import AdminDoctor from "@/components/admin/AdminDoctor.vue";
 import AdminRegister from "@/components/admin/AdminRegister.vue";
+import outPatientMain from "@/components/outpatient/OutPatientMain.vue";
 
 const routes = [
   {
@@ -21,6 +21,7 @@ const routes = [
     name: 'login',
     component: Login
   },
+  //   门诊模块
   {
     path: '/outdoctor',
     component: outDoctorMain,
@@ -29,6 +30,7 @@ const routes = [
       {path: '/outdoctor/checkout',name:'checkout',component:Checkout}
     ]
   },
+  //   药房模块
   {
     path: '/medicine',
     component: medicineMain,
@@ -40,7 +42,13 @@ const routes = [
   {
     path: '/medicine/manage',
     name:'manage',
-    component:medicineManage},
+    component:medicineManage
+  },
+  //   挂号模块
+  {
+    path: '/outpatient',
+    component:outPatientMain
+  },
   {
     path: '/admin',
     name: 'admin',

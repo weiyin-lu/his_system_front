@@ -45,45 +45,6 @@
             <div style="font-size: 15px;">退费</div>
           </el-button>
         </el-col>
-        <el-col :span="4">
-        <!--跳至费用查询页面-->
-           <el-button type="primary" style="height:80px; width:120px;" plain round @click="addRoutes6">
-              <i class="el-icon-search" style="font-size: 40px;"></i>
-              <div style="font-size: 15px;">费用查询</div>
-            </el-button>
-        </el-col>
-      </el-row>
-
-      <el-row :gutter="20">
-        <el-col :span="4">
-        <!--跳至日结页面-->
-          <el-button type="primary" style="height:80px; width:120px;" plain round @click="addRoutes7">
-            <i class="el-icon-document-add" style="font-size: 40px;"></i>
-            <div style="font-size: 15px;">日结</div>
-          </el-button>
-        </el-col>
-        <el-col :span="4">
-        <!--跳至日结查询页面-->
-          <el-button type="primary" style="height:80px; width:120px;" plain round @click="addRoutes8">
-            <i class="el-icon-document-checked" style="font-size: 40px;"></i>
-            <div style="font-size: 15px;">日结查询</div>
-          </el-button>
-        </el-col>
-        <el-col :span="4">
-        <!--跳至发票重打页面-->
-          <el-button type="danger" style="height:80px; width:120px;" plain round @click="addRoutes9">
-            <i class="el-icon-document-copy" style="font-size: 40px;"></i>
-            <div style="font-size: 15px;">发票重打</div>
-          </el-button>
-        </el-col>
-
-        <el-col :span="4">
-        <!--跳至发票补打页面-->
-          <el-button type="danger" style="height:80px; width:120px;" plain round @click="addRoutes10">
-            <i class="el-icon-printer" style="font-size: 40px;"></i>
-            <div style="font-size: 15px;">发票补打</div>
-          </el-button>
-        </el-col>
       </el-row>
     </el-main>
 
@@ -99,7 +60,7 @@ export default {
   data () {
     //注意：data即使不需要传数据，也必须return,否则会报错
     return {
-      userName:'',
+      userinfo:{},
      }
   },
   methods: {
@@ -119,21 +80,6 @@ export default {
     addRoutes5 () {
       this.$router.push('/refund')
     },
-    addRoutes6 () {
-      this.$router.push('/searchFund')
-    },
-    addRoutes7 () {
-      this.$router.push('/daily')
-    },
-    addRoutes8 () {
-      this.$router.push('/dailySearch')
-    },
-    addRoutes9 () {
-      this.$router.push('/reprint')
-    },
-    addRoutes10 () {
-      this.$router.push('/makeUpBill')
-    },
     addRoutes11 () {//用户注销时需弹出弹出框以确认是否返回登陆界面,而不是误操作
       this.$confirm('是否确认注销?', '提示', {
           cancelButtonText: '取消',
@@ -149,11 +95,9 @@ export default {
     }
   },
 
-  created: function(){
-    let _this = this;
-    axios.get("http://localhost:20910/patient/getDocNameById/"+this.$store.state.docId).then(function (resp){
-      _this.userName =  resp.data;
-    })
+  created(){
+    this.userInfo = JSON.parse(sessionStorage.getItem("userinfo"))
+    console.log(this.userInfo)
   }
 }
 </script>
