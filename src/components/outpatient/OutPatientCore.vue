@@ -215,13 +215,12 @@ export default {
       register:[]
      }
   },
-
+  // 1.获取登录userInfo数据
+  // 2.获取当前日期
+  // 3. 自动生成上下午状态
+  // 4. 查询门诊医生的列表，写入到doctorInfo
+  // 5. 查询挂号等级，存入register
   created(){
-    // 1.获取登录userInfo数据
-    // 2.获取当前日期
-    // 3. 自动生成上下午状态
-    // 4. 查询门诊医生的列表，写入到doctorInfo
-    // 5. 查询挂号等级，存入register
     let _this = this;
     // 1.
     this.userInfo = JSON.parse(sessionStorage.getItem('userinfo'))

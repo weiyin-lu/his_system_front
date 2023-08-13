@@ -104,11 +104,11 @@ export default {
     addRoutes5 () {
       this.$router.push('/refund')
     },
+    // 用户注销
+    // 1. 二次确认
+    // 2. 确认后，删除sessionstroage信息
+    // 3. 返回登录页
     logout () {
-      // 用户注销
-      // 1. 二次确认
-      // 2. 确认后，删除sessionstroage信息
-      // 3. 返回登录页
       // 1.
       this.$confirm('是否确认注销?', '提示', {
           cancelButtonText: '取消',
