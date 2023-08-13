@@ -16,6 +16,10 @@ import AdminDoctor from "@/components/admin/AdminDoctor.vue";
 import AdminRegister from "@/components/admin/AdminRegister.vue";
 import outPatientMain from "@/components/outpatient/OutPatientMain.vue";
 
+import checkOutCore from "@/components/checkout/CheckOutCore.vue";
+import checkoutMain from "@/components/checkout/CheckoutMain.vue";
+import checkoutManage from "@/components/checkout/CheckoutManage.vue";
+
 const routes = [
   {
     path: '/',
@@ -75,6 +79,21 @@ const routes = [
       },
     ]
   },
+  {
+    path: '/checkout',
+    name: 'checkout',
+    component: checkoutMain
+  },
+  {
+    path: '/checkout/core',
+    name: 'core',
+    component: checkOutCore
+  },
+  {
+    path: '/checkout/manage',
+    name: 'manage',
+    component: checkoutManage
+  }
 ]
 
 const router = createRouter({
