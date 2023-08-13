@@ -1,13 +1,14 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import Login from '../components/index/Login.vue'
-import doctorList from "@/components/backup/DoctorList.vue";
+
 import outDoctorMain from "@/components/outdoctor/OutDoctorMain.vue";
 import Medrecord from "@/components/outdoctor/OutDoctorMedrecord.vue"
 import Checkout from "@/components/outdoctor/OutDoctorCheckcout.vue"
-import DeptList from "@/components/backup/DeptList.vue";
+
 import medicineMain from '@/components/medicine/MedicineMain.vue'
 import medicineCore from '@/components/medicine/MedicineCore.vue'
 import medicineManage from '@/components/medicine/MedicineManage.vue'
+
 import Admin from '@/views/Admin.vue'
 import AdminMain from "@/components/admin/AdminMain.vue";
 import AdminDept from "@/components/admin/AdminDept.vue";
@@ -49,6 +50,7 @@ const routes = [
     path: '/outpatient',
     component:outPatientMain
   },
+  //   基本信息维护模块
   {
     path: '/admin',
     name: 'admin',
@@ -61,11 +63,11 @@ const routes = [
       },
       {
         path: 'dept',
-        component: DeptList
+        component: AdminDept
       },
       {
         path: 'doc',
-        component: doctorList
+        component: AdminDoctor
       },
       {
         path: 'reg',

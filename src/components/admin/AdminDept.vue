@@ -1,308 +1,312 @@
 <template>
-	<el-main>
-		<el-row style="background-color: #00FFFF">
-			<el-col :span="1" :offset="0">
-				<div class="top">
-					<el-image style="width: 40px; height: 40px" :src="returnimg" @click="returnmain"></el-image>
+	<div id="app">
+		<!--  顶部导航条  -->
+		<el-page-header :icon="null" @back="onback" style="padding: 20px;">
+			<template #content>
+				<div class="flex items-center">
+					<el-avatar :size="32" class="mr-3" src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png" />
+          <div style="float: right;height: 38px;line-height: 38px;margin-left: 20px;">
+            <span class="text-large font-600 mr-3"> {{ user.name }} </span>
+            <span class="text-sm mr-2" style="color: var(--el-text-color-regular);font-size: 14px;margin-left: 40px">
+						{{ user.userType }}
+					  </span>
+          </div>
+
 				</div>
-			</el-col>
-			<el-col :span="1" :offset="21">
-				<div style="text-align: center;margin-top: 20%">
-					<!--          {{user.username}}-->
+			</template>
+			<template #extra>
+				<div class="flex items-center">
+					<el-button type="primary" class="ml-2" @click="logout">退出</el-button>
 				</div>
-			</el-col>
-			<el-col :span="1">
-				<div class="top">
-					<el-image style="width: 40px; height: 40px" :src="quitimg" @click="logout"></el-image>
-				</div>
-			</el-col>
-		</el-row>
-		<el-row style="align-content:center;height:60px;">
-			<el-col :span="8" :offset="2" style="height:44px;margin-top: 8px;">
-				<el-autocomplete clearable class="inline-input" v-model="deptname" :fetch-suggestions="deptSearch" placeholder="请输入科室名称"
-				 @select="deptSelect" style="width: 150px" @keyup.native="$event.target.value = $event.target.value.replace(/\s+/g,'')"></el-autocomplete>
-			</el-col>
-			<el-col :span="4" :offset="4" style="margin-top: 8px;">
-				<el-button type="primary" icon="el-icon-search" @click="deptQuery">查询科室</el-button>
-			</el-col>
-			<el-col :span="4" style="margin-top: 8px;">
-				<el-button type="primary" icon="el-icon-circle-plus-outline" @click="addDept">新增科室</el-button>
-			</el-col>
-		</el-row>
-		<el-dialog title="新增/修改" :visible.sync="dialogFormVisible" @close="clear" width="35%">
-			<el-form :model="DeptForm" label-position="left" label-width="20%">
-				<el-form-item prop="dept_id" style="height: 0">
-					<el-input v-model="DeptForm.deptId" type="hidden"></el-input>
+			</template>
+		</el-page-header>
+
+		<!--添加科室-->
+		<el-button type="primary" @click="isaddshow = true">添加科室</el-button>
+
+		<!--科室列表表格-->
+		<el-table :data="deptlist" stripe style="width: 100%;height: 800px;">
+			<!--  对应字段-->
+			<el-table-column type="index" label="索引号码" width="180" />
+			<el-table-column prop="deptId" label="科室编码" width="180" />
+			<el-table-column prop="deptName" label="科室名称" width="180" />
+			<el-table-column prop="deptType" label="科室分类" width="180" />
+			<el-table-column prop="deptFunc" label="科室类型" width="180" />
+
+			<el-table-column align="right">
+				<template #header>
+					<!-- 模糊搜索输入框 -->
+					<el-autocomplete :fetch-suggestions="deptnameselect" style="width: 260px;" v-model="search.deptName" size="small" placeholder="科室名称" />
+					<el-autocomplete :fetch-suggestions="depttypeselect" style="width: 260px;" v-model="search.deptType" size="small" placeholder="科室分类" />
+					<el-autocomplete :fetch-suggestions="deptfuncselect" style="width: 260px;" v-model="search.deptFunc" size="small" placeholder="科室类型" />
+					<el-button style="width: 100px;" size="small" @click="getbylist()">查询</el-button>
+				</template>
+				<template #default="scope">
+					<!-- 获取这一行数据进行修改 -->
+					<el-button size="small" @click="toupdateline(scope.row)">修改</el-button>
+					<!-- 获取这一行id到后端删除 -->
+					<el-button size="small" type="danger" @click="deleteone(scope.row.deptId)">删除</el-button>
+				</template>
+			</el-table-column>
+		</el-table>
+		<!-- 点击修改弹出修改框 -->
+		<el-dialog v-model="isupshow" title="修改" width="30%" center>
+			<el-form :model="updateline" label-position="right" label-width="100px" style="max-width: 460px">
+				<el-form-item label="科室名" prop="deptName">
+					<el-input v-model="updateline.deptName" />
 				</el-form-item>
-				<el-form-item prop="dept_name" label="科室名称">
-					<el-input v-model="DeptForm.deptName" clearable @keyup.native="$event.target.value = $event.target.value.replace(/\s+/g,'')"></el-input>
+				<el-form-item label="科室类型" prop="deptType">
+					<el-input v-model="updateline.deptType" />
 				</el-form-item>
-				<el-form-item prop="dept_type" label="科室分类">
-					<el-input v-model="DeptForm.deptType" clearable @keyup.native="$event.target.value = $event.target.value.replace(/\s+/g,'')"></el-input>
-				</el-form-item>
-				<el-form-item prop="dept_func" label="科室类型">
-					<el-input v-model="DeptForm.deptFunc" clearable @keyup.native="$event.target.value = $event.target.value.replace(/\s+/g,'')"></el-input>
+				<el-form-item label="科室从属" prop="deptFunc">
+					<el-input v-model="updateline.deptFunc" />
 				</el-form-item>
 			</el-form>
-			<div slot="footer" class="dialog-footer">
-				<el-button @click="dialogFormVisible = false">取 消</el-button>
-				<el-button type="primary" @click="onSubmit">确 定</el-button>
-			</div>
+			<template #footer>
+				<span class="dialog-footer">
+					<el-button type="primary" @click="updateone()">确定</el-button>
+					<el-button @click="isupshow = false;">取消</el-button>
+				</span>
+			</template>
 		</el-dialog>
-		<el-row style="border-width: 1px;border-style: solid; border-color: #eaeaea">
-			<el-table highlight-current-row height="550" :data="deptlist" style="width: 100%">
-				<el-table-column type="index">
-				</el-table-column>
-				<el-table-column prop="deptId" label="科室编码">
-				</el-table-column>
-				<el-table-column prop="deptName" label="科室名称">
-				</el-table-column>
-				<el-table-column prop="deptType" label="科室分类">
-				</el-table-column>
-				<el-table-column prop="deptFunc" label="科室类型">
-				</el-table-column>
-				<el-table-column label="操作">
-					<template #default="scope">
-						<el-button :disabled="scope.row.status===0" size="mini" @click="deptEdit(scope.row)">编辑</el-button>
-						<el-button v-if="scope.row.status===1" size="mini" type="danger" @click="deptDelete(scope.row)">删除</el-button>
-						<el-button v-if="scope.row.status===0" size="mini" type="success" @click="deptAdd(scope.row)">激活</el-button>
-					</template>
-				</el-table-column>
-			</el-table>
-		</el-row>
-	</el-main>
+		<!-- 点击添加弹出添加框 -->
+		<el-dialog v-model="isaddshow" title="添加" width="30%" center>
+			<el-form :model="addline" label-position="right" label-width="100px" style="max-width: 460px">
+				<el-form-item label="科室名" prop="deptName">
+					<el-input v-model="addline.deptName" />
+				</el-form-item>
+				<el-form-item label="科室类型" prop="deptType">
+					<el-input v-model="addline.deptType" />
+				</el-form-item>
+				<el-form-item label="科室从属" prop="deptFunc">
+					<el-input v-model="addline.deptFunc" />
+				</el-form-item>
+			</el-form>
+			<template #footer>
+				<span class="dialog-footer">
+					<el-button type="primary" @click="addone()">确定</el-button>
+					<el-button @click="isaddshow = false;">取消</el-button>
+				</span>
+			</template>
+		</el-dialog>
+	</div>
 </template>
 
 <script>
 	import http from "@/axios/http";
 	export default {
-		name: "DeptManage",
+		name: "AdminDept",
 		data() {
 			return {
-				/*当前用户*/
-				user: '',
-				returnimg: require('@/assets/返回.png'),
-				quitimg: require('@/assets/+退出.png'),
-				dialogFormVisible: false,
-				/*显示用的部门信息*/
-				deptlist: [],
-				/*全部部门信息*/
-				deptall: [],
-				/*搜索使用的名字*/
-				deptname: '',
-				DeptForm: {
-					deptId: '',
-					deptName: '',
-					deptType: '',
-					deptFunc: '',
-					status: ''
+        // 用户数据
+        user:[],
+				// 模糊查询输入框
+				search: {
+					deptName: "",
+					deptType: "",
+					deptFunc: ""
 				},
-				maxId: ''
+				deptlist: [],
+				// 模糊查询使用数组
+				newArray: [],
+				AllArray: [],
+				// 修改框是否显示
+				isupshow: false,
+				updateline: [],
+				// 添加框是否显示
+				isaddshow: false,
+				addline: {
+					deptName: "",
+					deptType: "",
+					deptFunc: ""
+				}
 			}
 		},
 		mounted() {
-			this.loadDepts();
+      this.user=JSON.parse(sessionStorage.getItem("userinfo"))
+			this.getlist()
+
 		},
 		methods: {
-			/*获取全部科室信息*/
-			loadDepts() {
-				http.get('/depts/').then(response => {
-					// console.log(response.data)
-					if (response.data.code === "SUCCESS") {
-						this.deptlist = response.data.data
-						this.AllArray = response.data.data
-					} else {
-						this.$message.error("身份过期，请重新登录")
-						this.$router.push("/")
-					}
+			getlist() {
+				http.get("/depts/")
+					.then(response => {
+						// console.log(response.data)
+						if (response.data.code === "SUCCESS") {
+							this.deptlist = response.data.data
+							this.AllArray = response.data.data
+						} else {
+							this.$message.error("身份过期，请重新登录")
+							this.$router.push("/")
+						}
+					})
+			},
+
+			// 使用前端做的模糊查询
+			getbylist() {
+
+				this.newArray = this.AllArray.filter(array => array.deptName.includes(this.search.deptName))
+
+				this.newArray = this.newArray.filter(array => array.deptType.includes(this.search.deptType))
+
+				this.newArray = this.newArray.filter(array => array.deptFunc.includes(this.search.deptFunc))
+
+				this.deptlist = this.newArray
+			},
+
+			// 传给后端id删除这一行
+			deleteone(id) {
+				this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
+					confirmButtonText: '确定',
+					cancelButtonText: '取消',
+					type: 'warning'
+				}).then(() => {
+					http.delete("/depts/" + id).then(response => {
+						// console.log(response.data)
+						if (response.data.code === "SUCCESS") {
+							this.$message.success("删除成功")
+							this.getlist()
+						} else {
+							this.$message.error(response.data.msg)
+						}
+					})
+				}).catch(() => {
+					this.$message({
+						type: 'info',
+						message: '已取消删除'
+					});
 				})
-				this.user = JSON.parse(sessionStorage.getItem('user'));
 			},
-			/*科室信息编辑*/
-			deptEdit(item) {
-				this.dialogFormVisible = true;
-				this.DeptForm = {
-					deptId: item.deptId,
-					deptName: item.deptName,
-					deptType: item.deptType,
-					deptFunc: item.deptFunc,
-					status: item.status
-				}
+
+			// 因赋值问题单独做的
+			toupdateline(updateline) {
+				this.isupshow = true
+				/**
+				 * 新开辟一段空间
+				 * 因为前段引用类型数据会赋值地址
+				 * 所以修改后不点击确定数据也会改变
+				 * 但数据库中的数据不变
+				 */
+				this.updateline = JSON.parse(JSON.stringify(updateline))
 			},
-			/*科室查询*/
-			  deptQuery(){
-			      axios.get('http://localhost:20910/api/admin/depts/'+this.deptname).then(resp => {
-			          if (resp && resp.data.code === 200) {
-			              this.depts = resp.data.result;
-			          }
-			      })
-			  },
-			/*科室删除*/
-			  deptDelete(item){
-			      this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
-			          confirmButtonText: '确定',
-			          cancelButtonText: '取消',
-			          type: 'warning'
-			      }).then(() => {
-			          axios.post('http://localhost:20910/api/admin/depts/delete', {
-			                  deptId:item.deptId,
-			                  deptName:item.deptName,
-			                  deptType:item.deptType,
-			                  deptFunc:item.deptFunc,
-			                  status:item.status
-			              }).then(resp => {
-			              if (resp && resp.data.code === 200) {
-			                  this.$message({
-			                      type: 'success',
-			                      message: '删除成功!'
-			                  });
-			              }
-			              else {
-			                  this.$message({
-			                      type: 'error',
-			                      message:"删除失败，"+resp.data.message
-			                  });
-			              }
-			              this.loadDepts();
-			          })
-			      }).catch(() => {
-			          this.$message({
-			              type: 'info',
-			              message: '已取消删除'
-			          });
-			      });
-			  },
-			/*新增科室*/
-			  addDept(){
-			      this.maxId = Math.max.apply(null,this.deptall.map(item=>{return item.deptId}))
-			      this.maxId++;
-			      this.dialogFormVisible = true;
-			      this.DeptForm.deptId = this.maxId;
-			      if(this.DeptForm.deptId < 0){
-			      this.DeptForm.deptId = '1';
-			      }
-			      this.DeptForm.status = '1';
-			  },
-			/*激活科室*/
-			  deptAdd(item){
-			    axios.post('http://localhost:20910/api/admin/depts', {
-			      deptId:item.deptId,
-			      deptName:item.deptName,
-			      deptType:item.deptType,
-			      deptFunc:item.deptFunc,
-			      status:'1'
-			    }).then(resp => {
-			              if (resp && resp.data.code === 200) {
-			                this.$message({
-			                  type: 'success',
-			                  message: '激活成功!'
-			                });
-			              }
-			              else {
-			                this.$message({
-			                  type: 'error',
-			                  message:"激活失败，"+resp.data.message
-			                });
-			              }
-			              this.loadDepts();
-			    })
-			  },
-			/*清空表格信息*/
-			  clear(){
-			      this.DeptForm={
-			          deptId:'',
-			          deptName:'',
-			          deptType:'',
-			          deptFunc:'',
-			          status: ''
-			      }
-			  },
-			/*提交用户请求*/
-			  onSubmit () {
-			    if(this.DeptForm.deptName.length < 1 || this.DeptForm.deptName === " "||
-			            this.DeptForm.deptType.length < 1 || this.DeptForm.deptType === " "||
-			            this.DeptForm.deptFunc.length < 1 ||this.DeptForm.deptFunc === " "){
-			      this.$message({
-			        type: 'error',
-			        message: '请完整填入信息！'
-			      });
-			    }else {
-			      axios.get('http://localhost:20910/api/admin/depts/' + this.DeptForm.deptName).then(resp => {
-			        if (resp && resp.data.code === 200) {
-			          let dept = resp.data.result;
-			          if (dept.length !== 0 && dept[0].deptId !== this.DeptForm.deptId) {
-			            this.$message({
-			              type: 'error',
-			              message: '部门名重复！'
-			            });
-			          } else {
-			            axios.post('http://localhost:20910/api/admin/depts', {
-			              deptId: this.DeptForm.deptId,
-			              deptName: this.DeptForm.deptName,
-			              deptType: this.DeptForm.deptType,
-			              deptFunc: this.DeptForm.deptFunc,
-			              status: this.DeptForm.status
-			            }).then(resp => {
-			              if (resp && resp.data.code === 200) {
-			                this.dialogFormVisible = false;
-			                this.loadDepts();
-			              }
-			            })
-			          }
-			        }
-			      })
-			    }
-			  },
-			/*返回主界面*/
-			  returnmain(){
-			      this.$router.replace({path: '/admin'});
-			  },
-			/*退出*/
-			  logout(){
-			      this.$confirm('确定退出？', '提示', {
-			          confirmButtonText: '确定',
-			          cancelButtonText: '取消',
-			          type: 'warning'
-			      }).then(() => {
-			          window.sessionStorage.removeItem("user");
-			          this.$router.replace({path: '/'})
-			      }).catch(() => {
-			          this.$message({
-			              type: 'info',
-			              message: '已取消退出'
-			          });
-			      });
-			  },
-			/*提示科室名称*/
-			deptSearch(queryString, cb) {
-			  let depts = this.deptall;
-			  depts = depts.map(item=>{
-			    item.value = item.deptName;
-			    return item;
-			  });
-			  let results = queryString ? depts.filter(this.createFilter(queryString)) : depts;
-			  // 调用 callback 返回建议列表的数据
-			  cb(results);
+
+			// 修改后的值传入后端修改
+			updateone() {
+        if(this.addline.deptName.trim().length < 1 ||
+            this.addline.deptType.trim().length < 1 ||
+            this.addline.deptFunc.trim().length < 1 ){
+          this.$message({
+            type: 'error',
+            message: '请完整填入信息！'
+          });
+        }else{
+          http.put("/depts/update", this.updateline)
+              .then(response => {
+                // console.log(response.data)
+                if (response.data.code === "SUCCESS") {
+                  this.$message.success("修改成功")
+                  this.getlist()
+                  this.isupshow = false
+                } else {
+                  this.$message.error(response.data.msg)
+                }
+              })
+        }
+
 			},
-			/*根据输入信息对科室信息进行筛选*/
-			createFilter(queryString) {
-			  return (dept) => {
-			    return (dept.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0);
-			  };
+
+			// 添加数据传入后端添加
+			addone() {
+        if(this.addline.deptName.length < 1 || this.addline.deptName === " "||
+            this.addline.deptType.length < 1 || this.addline.deptType === " "||
+            this.addline.deptFunc.length < 1 ||this.addline.deptFunc === " "){
+          this.$message({
+            type: 'error',
+            message: '请完整填入信息！'
+          });
+        }else{
+          http.post("/depts/add", this.addline)
+              .then(response => {
+                // console.log(response.data)
+                if (response.data.code === "SUCCESS") {
+                  this.$message.success("添加成功")
+                  this.getlist()
+                  this.isaddshow = false
+                } else {
+                  this.$message.error(response.data.msg)
+                }
+              })
+        }
 			},
-			/*选中某科室信息后处理*/
-			deptSelect(item) {
-			  this.depts = [{deptId:item.deptId,
-			    deptName:item.deptName,
-			    deptType:item.deptType,
-			    deptFunc:item.deptFunc,
-			    status:item.status
-			  }];
+
+      //点击输入框时提示科室名的值
+      deptnameselect(queryString,cb) {
+        this.newArray = this.AllArray.map(item=>{
+          item.value = item.deptName;
+          return item;
+        });
+        let results = queryString ? this.newArray.filter((name) => name.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0) : this.newArray;
+        // 调用 callback 返回建议列表的数据
+        cb(results);
+      },
+
+      //点击输入框时提示科室分类的值
+      depttypeselect(queryString,cb) {
+        this.newArray = this.AllArray.map(item=>{
+          item.value = item.deptType;
+          return item;
+        });
+        // 去除数组中重复值
+        this.newArray=this.newArray.filter((item,index) => this.newArray.findIndex(type => type.deptType === item.deptType) === index)
+
+        let results = queryString ? this.newArray.filter((type) => type.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0) : this.newArray;
+        // 调用 callback 返回建议列表的数据
+        cb(results);
+      },
+
+      //点击输入框时提示科室类型的值
+      deptfuncselect(queryString,cb) {
+        this.newArray = this.AllArray.map(item=>{
+          item.value = item.deptFunc;
+          return item;
+        });
+        // 去除数组中重复值
+        this.newArray=this.newArray.filter((item,index) => this.newArray.findIndex(func => func.deptFunc === item.deptFunc) === index)
+        //根据搜索框内字符串匹配
+        let results = queryString ? this.newArray.filter((func) => func.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0) : this.newArray;
+        // 调用 callback 返回建议列表的数据
+        cb(results);
+      },
+
+			// 退回管理页面
+			onback() {
+				this.$router.replace({
+					path: '/admin'
+				});
 			},
-		}
+
+			// 退出登录
+			logout() {
+				this.$confirm('确定退出？', '提示', {
+					confirmButtonText: '确定',
+					cancelButtonText: '取消',
+					type: 'warning'
+				}).then(() => {
+					window.sessionStorage.removeItem("token");
+          window.sessionStorage.removeItem("userinfo");
+					this.$router.replace({
+						path: '/'
+					})
+				}).catch(() => {
+					this.$message({
+						type: 'info',
+						message: '已取消退出'
+					});
+				});
+			},
+		},
 	}
 </script>
 
-<style scoped>
-
+<style>
 </style>

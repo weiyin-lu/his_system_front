@@ -40,19 +40,6 @@
               </router-link>
             </el-col>
           </el-row>
-          <el-row class="row1">
-            <el-col :span="6" v-for="(fit,index) in fits2" :key="fit">
-              <router-link :to="'/admin'+router2[index]">
-                <div>
-                  <el-image
-                    style="width: 96px; height: 96px"
-                    :src="url2[index]"></el-image>
-                  <br>
-                  {{fit}}
-                </div>
-              </router-link>
-            </el-col>
-          </el-row>
         </el-col>
       </el-row>
 
@@ -69,18 +56,12 @@
           name: "AdminMain",
           data() {
               return {
-                  fits1: ['常数管理','科室管理', '用户管理', '诊断目录管理'],
-                  fits2: ['挂号级别管理','非药品收费项目管理','医生排班管理'],
-                  router1:['','/dept','/doc',''],
-                  router2:['/reg','',''],
-                  url: [require('@/assets/常用参数.png'),
+                  fits1: ['科室管理', '用户管理', '挂号级别管理'],
+                  router1:['/dept','/doc','/reg'],
+                  url: [
                         require('@/assets/科室.png'),
                         require('@/assets/用户图标.png'),
-                        require('@/assets/首页项目诊断.png'),
-                  ],
-                  url2: [require('@/assets/医院挂号.png'),
-                         require('@/assets/医疗账单医院费用门诊账单.png'),
-                         require('@/assets/医生排班.png'),
+                        require('@/assets/医院挂号.png'),
                   ],
                   quitimg: require('@/assets/+退出.png'),
                   mainmenu: require('@/assets/扁平管理员图标.png')
