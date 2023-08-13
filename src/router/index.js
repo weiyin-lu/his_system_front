@@ -14,7 +14,9 @@ import AdminMain from "@/components/admin/AdminMain.vue";
 import AdminDept from "@/components/admin/AdminDept.vue";
 import AdminDoctor from "@/components/admin/AdminDoctor.vue";
 import AdminRegister from "@/components/admin/AdminRegister.vue";
+
 import outPatientMain from "@/components/outpatient/OutPatientMain.vue";
+import outPatientCore from "@/components/outpatient/OutPatientCore.vue";
 
 const routes = [
   {
@@ -49,6 +51,10 @@ const routes = [
   {
     path: '/outpatient',
     component:outPatientMain
+  },
+  {
+    path: '/outpatient/core',
+    component:outPatientCore
   },
   //   基本信息维护模块
   {
