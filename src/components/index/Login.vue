@@ -29,7 +29,8 @@
         <el-input type="password" v-model="loginForm.password" placeholder="请输入密码"/>
       </el-form-item>
       <el-form-item style="width: 100%">
-        <el-button type="primary" style="width: 100%;background: #505458;border: none" @click="login()">登录</el-button>
+        <el-button type="primary" style="width: 100%;background: #505458;border: none"
+                   @click="login()">登录</el-button>
       </el-form-item>
     </el-form>
   </div>
@@ -57,6 +58,7 @@
                   { min: 6, message: '长度不小于6个字符' }
                 ],
               },
+              userInfo: {}
             }
         },
         methods: {
@@ -87,6 +89,15 @@
                             })
                             .then(info => {
                               sessionStorage.setItem('userinfo',JSON.stringify(info.data.data));
+                              this.userInfo = info.data.data;
+                              // 3.
+                              switch (info.data.data.userType) {
+                                case '门诊医生': this.$router.push('/outdoctor');console.log("run");break;
+                                case '挂号收费员': this.$router.push('/outpatient');break;
+                                case '医技医生': this.$router.push('/checkout');break;
+                                case '药房医生': this.$router.push('/medicine');break;
+                                case '医院管理员': this.$router.push('/admin');break;
+                              }
                             })
                             // 3.
                             // 未完成，需要等待其他模块实装 卢子昂_2023-08-11_19:55
