@@ -1,8 +1,32 @@
 <template>
 	<div id="app">
-		<el-button type="primary" @click="getlist()">查询</el-button>
-		<el-table :data="doctorlist" stripe style="width: 100%">
-			<el-table-column prop="name" label="姓名" width="180" />
+    <!--  顶部导航条  -->
+    <el-page-header :icon="null" @back="onback" style="padding: 20px;">
+      <template #content>
+        <div class="flex items-center">
+          <el-avatar :size="32" class="mr-3" src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png" />
+          <div style="float: right;height: 38px;line-height: 38px;margin-left: 20px;">
+            <span class="text-large font-600 mr-3"> {{ user.name }} </span>
+            <span class="text-sm mr-2" style="color: var(--el-text-color-regular);font-size: 14px;margin-left: 40px">
+						{{ user.userType }}
+					  </span>
+          </div>
+
+        </div>
+      </template>
+      <template #extra>
+        <div class="flex items-center">
+          <el-button type="primary" class="ml-2" @click="logout">退出</el-button>
+        </div>
+      </template>
+    </el-page-header>
+
+    <!--添加医生-->
+    <el-button type="primary" @click="isaddshow = true">添加医生</el-button>
+
+    <!--医生列表表格-->
+		<el-table :data="doctorlist" stripe style="width: 100%;height: 800px;">
+			<el-table-column prop="name" label="用户名" width="180" />
 			<el-table-column prop="userType" label="用户类型" width="180" />
 			<el-table-column prop="title" label="职称" />
 			<el-table-column prop="deptName" label="科室名" />
@@ -11,38 +35,94 @@
 			<el-table-column prop="regName" label="挂号等级" />
 			<el-table-column align="right">
 				<template #header>
-					<el-input v-model="search.name" size="small" placeholder="Type to name" />
-					<el-input v-model="search.userType" size="small" placeholder="Type to userType" />
-					<el-input v-model="search.title" size="small" placeholder="Type to title" />
+					<el-autocomplete :fetch-suggestions="doctornameselect" v-model="search.name" size="small" placeholder="用户名" />
+					<el-autocomplete :fetch-suggestions="doctortypeselect" v-model="search.userType" size="small" placeholder="用户类型" />
+					<el-autocomplete :fetch-suggestions="doctortitleselect" v-model="search.title" size="small" placeholder="职称" />
 					<el-button size="small" @click="getbylist()">查询</el-button>
 				</template>
 				<template #default="scope">
-					<el-button size="small" >Edit</el-button>
-					<el-button size="small" type="danger" @click="deleteone(scope.row.docId)">Delete</el-button>
+					<el-button size="small" >修改</el-button>
+					<el-button size="small" type="danger" @click="deleteone(scope.row.docId)">删除</el-button>
 				</template>
 			</el-table-column>
 		</el-table>
+
+    <!-- 点击添加弹出添加框 -->
+    <el-dialog v-model="isaddshow" title="添加" width="30%" center>
+      <el-form :model="addline" label-position="right" label-width="100px" style="max-width: 460px">
+        <el-form-item label="科室名" prop="deptName">
+          <el-input v-model="addline.deptName" />
+        </el-form-item>
+        <el-form-item label="科室类型" prop="deptType">
+          <el-input v-model="addline.deptType" />
+        </el-form-item>
+        <el-form-item label="科室从属" prop="deptFunc">
+          <el-input v-model="addline.deptFunc" />
+        </el-form-item>
+      </el-form>
+      <template #footer>
+				<span class="dialog-footer">
+					<el-button type="primary" @click="addone()">确定</el-button>
+					<el-button @click="isaddshow = false;">取消</el-button>
+				</span>
+      </template>
+    </el-dialog>
 	</div>
 </template>
 
 <script>
-	import axios from 'axios'
   import http from "@/axios/http";
 	export default {
 		name: "DoctorList",
 		data() {
 			return {
+
+        // 用户数据
+        user:[],
+
+        // 模糊查询输入框
 				search:{
 					name:"",
 					userType:"",
 					title:""
 				},
+
+        // 用于显示的对象
 				doctorlist: [],
+        deptlist:[],
+
+
+        // 用于方法调用的对象
 				newArray: [],
 				AllArray: [],
+
+        // 修改框是否显示
+        isupshow: false,
+        updateline: [],
+
+        // 添加框是否显示
+        isaddshow: false,
+        addline: {
+          password: "",
+          name: "",
+          userType:"",
+          title:"",
+          deptId:"",
+          regId:""
+        }
+
 			}
 		},
+
+    mounted() {
+      this.user=JSON.parse(sessionStorage.getItem("userinfo"))
+      this.getdeptlist()
+      this.getlist()
+
+    },
+
 		methods: {
+
 			//查询所有医生
 			getlist() {
 				http.get("/doctors/")
@@ -57,7 +137,22 @@
 						}
 					})
 			},
-			//还未实现，根据要查的数据传键值对
+
+      //查询科室列表
+      getdeptlist() {
+        http.get("/depts/")
+            .then(response => {
+              // console.log(response.data)
+              if (response.data.code === "SUCCESS") {
+                this.deptlist = response.data.data
+              } else {
+                this.$message.error("身份过期，请重新登录")
+                this.$router.push("/")
+              }
+            })
+      },
+
+			//模糊查询
 			getbylist() {
 				
 				this.newArray=this.AllArray.filter(array => array.name.includes(this.search.name))
@@ -78,18 +173,97 @@
 				// 	}
 				// })
 			},
+
+      // 传给后端id删除这一行
 			deleteone(id) {
-				axios.delete("http://localhost:8000/doctors/"+id)
-				.then(response => {
-					console.log(response.data)
-					if (response.data.code == "SUCCESS") {
-						this.$message.success("删除成功")
-						this.getlist()
-					} else {
-						this.$message.error(response.data.msg)
-					}
-				})
+        this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          http.delete("/doctors/" + id).then(response => {
+            // console.log(response.data)
+            if (response.data.code == "SUCCESS") {
+              this.$message.success("删除成功")
+              this.getlist()
+            } else {
+              this.$message.error(response.data.msg)
+            }
+          })
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消删除'
+          });
+        })
 			},
+
+      //点击输入框时提示用户名的值
+      doctornameselect(queryString,cb) {
+        this.newArray = this.AllArray.map(item=>{
+          item.value = item.name;
+          return item;
+        });
+        let results = queryString ? this.newArray.filter((name) => name.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0) : this.newArray;
+        // 调用 callback 返回建议列表的数据
+        cb(results);
+      },
+
+      //点击输入框时提示用户类型的值
+      doctortypeselect(queryString,cb) {
+        this.newArray = this.AllArray.map(item=>{
+          item.value = item.userType;
+          return item;
+        });
+        // 去除数组中重复值
+        this.newArray=this.newArray.filter((item,index) => this.newArray.findIndex(type => type.userType === item.userType) === index)
+
+        let results = queryString ? this.newArray.filter((type) => type.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0) : this.newArray;
+        // 调用 callback 返回建议列表的数据
+        cb(results);
+      },
+
+      //点击输入框时提示用户职称的值
+      doctortitleselect(queryString,cb) {
+        this.newArray = this.AllArray.map(item=>{
+          item.value = item.title;
+          return item;
+        });
+        // 去除数组中重复值
+        this.newArray=this.newArray.filter((item,index) => this.newArray.findIndex(title => title.title === item.title) === index)
+        //根据搜索框内字符串匹配
+        let results = queryString ? this.newArray.filter((title) => title.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0) : this.newArray;
+        // 调用 callback 返回建议列表的数据
+        cb(results);
+      },
+
+      // 退回管理页面
+      onback() {
+        this.$router.replace({
+          path: '/admin'
+        });
+      },
+
+      // 退出登录
+      logout() {
+        this.$confirm('确定退出？', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          window.sessionStorage.removeItem("token");
+          window.sessionStorage.removeItem("userinfo");
+          this.$router.replace({
+            path: '/'
+          })
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消退出'
+          })
+        })
+      },
+
 		},
 	}
 </script>

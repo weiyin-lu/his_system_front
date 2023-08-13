@@ -5,10 +5,13 @@
 			<template #content>
 				<div class="flex items-center">
 					<el-avatar :size="32" class="mr-3" src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png" />
-					<span class="text-large font-600 mr-3"> Title </span>
-					<span class="text-sm mr-2" style="color: var(--el-text-color-regular)">
-						Sub title
-					</span>
+          <div style="float: right;height: 38px;line-height: 38px;margin-left: 20px;">
+            <span class="text-large font-600 mr-3"> {{ user.name }} </span>
+            <span class="text-sm mr-2" style="color: var(--el-text-color-regular);font-size: 14px;margin-left: 40px">
+						{{ user.userType }}
+					  </span>
+          </div>
+
 				</div>
 			</template>
 			<template #extra>
@@ -34,8 +37,8 @@
 				<template #header>
 					<!-- 模糊搜索输入框 -->
 					<el-autocomplete :fetch-suggestions="deptnameselect" style="width: 260px;" v-model="search.deptName" size="small" placeholder="科室名称" />
-					<el-input style="width: 260px;" v-model="search.deptType" size="small" placeholder="科室分类" />
-					<el-input style="width: 260px;" v-model="search.deptFunc" size="small" placeholder="科室类型" />
+					<el-autocomplete :fetch-suggestions="depttypeselect" style="width: 260px;" v-model="search.deptType" size="small" placeholder="科室分类" />
+					<el-autocomplete :fetch-suggestions="deptfuncselect" style="width: 260px;" v-model="search.deptFunc" size="small" placeholder="科室类型" />
 					<el-button style="width: 100px;" size="small" @click="getbylist()">查询</el-button>
 				</template>
 				<template #default="scope">
@@ -95,6 +98,8 @@
 		name: "DeptList",
 		data() {
 			return {
+        // 用户数据
+        user:[],
 				// 模糊查询输入框
 				search: {
 					deptName: "",
@@ -118,7 +123,9 @@
 			}
 		},
 		mounted() {
+      this.user=JSON.parse(sessionStorage.getItem("userinfo"))
 			this.getlist()
+
 		},
 		methods: {
 			getlist() {
@@ -219,8 +226,35 @@
           item.value = item.deptName;
           return item;
         });
-        console.log(this.newArray)
         let results = queryString ? this.newArray.filter((name) => name.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0) : this.newArray;
+        // 调用 callback 返回建议列表的数据
+        cb(results);
+      },
+
+      //点击输入框时提示科室分类的值
+      depttypeselect(queryString,cb) {
+        this.newArray = this.AllArray.map(item=>{
+          item.value = item.deptType;
+          return item;
+        });
+        // 去除数组中重复值
+        this.newArray=this.newArray.filter((item,index) => this.newArray.findIndex(type => type.deptType === item.deptType) === index)
+
+        let results = queryString ? this.newArray.filter((type) => type.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0) : this.newArray;
+        // 调用 callback 返回建议列表的数据
+        cb(results);
+      },
+
+      //点击输入框时提示科室类型的值
+      deptfuncselect(queryString,cb) {
+        this.newArray = this.AllArray.map(item=>{
+          item.value = item.deptFunc;
+          return item;
+        });
+        // 去除数组中重复值
+        this.newArray=this.newArray.filter((item,index) => this.newArray.findIndex(func => func.deptFunc === item.deptFunc) === index)
+        //根据搜索框内字符串匹配
+        let results = queryString ? this.newArray.filter((func) => func.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0) : this.newArray;
         // 调用 callback 返回建议列表的数据
         cb(results);
       },
@@ -250,7 +284,7 @@
 						message: '已取消退出'
 					});
 				});
-			}
+			},
 		},
 	}
 </script>
