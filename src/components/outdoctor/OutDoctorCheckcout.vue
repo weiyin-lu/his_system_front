@@ -58,6 +58,10 @@
       <el-tag style="width: 70px">检查位置</el-tag>
       <el-input clearable v-model.trim="consume.body" style="width: 500px;margin-left: 50px" />
     </el-row>
+    <el-row style="margin-left: 10px;margin-top: 20px">
+      <el-tag style="width: 70px;margin-right: 50px">检查内容</el-tag>
+      <el-tag type="success" style="margin-right: 50px;font-size: 15px">{{ nodrugMsg }}</el-tag>
+    </el-row>
     <el-row style="text-align: center;margin-top: 20px">
       <el-icon color="#FFFFFF">
         <Select />
@@ -88,6 +92,7 @@ export default {
         prescription:'',
         useage:'',
         aim: '',
+        body: '',
         consumption:'',
         frequency:'',
       },
@@ -97,13 +102,18 @@ export default {
       consumedList: [],
       // 所有医技处理方案的列表
       noDrugList:[],
+      // 所有部门信息的列表
+      deptList:[],
       // 所有处置列表里的查询信息
-      searchString: ''
+      searchString: '',
+      // 展示当前选中的处置信息的消息
+      nodrugMsg: ''
     }
   },
   // 1. 从sessionstorage获取userinfo信息，从store获取当前病人recordId，写入到子组件对象里
   // 2. 查询当前病人已有的医技信息,存入对象
   // 3. 查询所有有效的医技处理方案,存入对象
+  // 4. 查询所有部门信息,存入对象
   created() {
     // 1.
     let patient = this.$store.state.presentPatient
@@ -119,6 +129,11 @@ export default {
         .then(response => {
           this.noDrugList = response.data.data
         })
+    // 4.
+    http.get('/depts/')
+        .then(response => {
+          this.deptList = response.data.data
+        })
   },
   // /checkouts/manage/ 查询所有有效医技列表
   //  /checkouts/{recordId} 展示有需要处理医技信息的病人概要信息
@@ -133,13 +148,18 @@ export default {
       let dt = new Date(data)
       return dt.getFullYear() + '-' + (dt.getMonth() + 1) + '-' + dt.getDate() + ' ' + dt.getHours() + ':' + dt.getMinutes() + ':' + dt.getSeconds()
     },
-    // 将当前选择的处置填入consume对象
+    // 1. 将当前选择的处置填入consume对象
+    // 2. 将当前选择的处置组成消息写入nodrugMsg,需要通过deptList获取其对应科室名
     inputPresent(value) {
+      // 1.
       this.consume.costName = value.name
       this.consume.price = value.price
       this.consume.deptId = value.deptId
       this.consume.type = '检查'
       this.consume.subject = value.subject
+      // 2.
+      let tempDept = this.deptList.filter(value => {return value.deptId == this.consume.deptId})
+      this.nodrugMsg = this.consume.costName + ' - ' + tempDept[0].deptType
     },
     // 调用接口,提交当前consume的所有信息
     commit() {
@@ -148,8 +168,16 @@ export default {
             console.log(response.data)
           })
     },
+    // 清空输入的数据
     clear() {
-
+      this.consume.aim = ''
+      this.consume.body = ''
+      this.consume.costName = ''
+      this.consume.price = null
+      this.consume.deptId = null
+      this.consume.type = ''
+      this.consume.subject = ''
+      this.nodrugMsg = ''
     },
   }
 }
