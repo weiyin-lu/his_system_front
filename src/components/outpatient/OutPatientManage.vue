@@ -68,7 +68,7 @@
                   支付
                 </el-button>
                 <el-button type="danger" @click="handleConsumeUnPay(scope.row)"
-                           :disabled="scope.row.payment == 1 && scope.row.execute == 1">
+                           :disabled="scope.row.payment == 0 && scope.row.takeMed == 0">
                   退费
                 </el-button>
               </template>
