@@ -152,7 +152,6 @@
 </template>
 
 <script type="text/javascript">
-import axios from 'axios'
 import http from "@/axios/http";
 export default {
   components: {

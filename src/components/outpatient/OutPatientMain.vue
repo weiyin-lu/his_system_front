@@ -55,21 +55,7 @@
         <!--跳至退号页面-->
           <el-button type="danger" style="height:80px; width:120px;" plain round @click="addRoutes3">
             <i class="el-icon-s-release" style="font-size: 40px;"></i>
-            <div style="font-size: 15px;">退号</div>
-          </el-button>
-        </el-col>
-        <el-col :span="4">
-        <!--跳至收费页面-->
-          <el-button type="primary" style="height:80px; width:120px;" plain round @click="addRoutes4">
-            <i class="el-icon-wallet" style="font-size: 40px;"></i>
-            <div style="font-size: 15px;">收费</div>
-          </el-button>
-        </el-col>
-        <el-col :span="4">
-        <!--跳至退费页面-->
-          <el-button type="danger" style="height:80px; width:120px;" plain round @click="addRoutes5">
-            <i class="el-icon-coin" style="font-size: 40px;"></i>
-            <div style="font-size: 15px;">退费</div>
+            <div style="font-size: 15px;">挂号信息操作</div>
           </el-button>
         </el-col>
       </el-row>
@@ -96,13 +82,7 @@ export default {
       this.$router.push('/outpatient/core')
     },
     addRoutes3 () {
-      this.$router.push('/withdraw')
-    },
-    addRoutes4 () {
-      this.$router.push('/charge')
-    },
-    addRoutes5 () {
-      this.$router.push('/refund')
+      this.$router.push('/outpatient/manage')
     },
     // 用户注销
     // 1. 二次确认

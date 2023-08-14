@@ -1,13 +1,16 @@
 <template>
-      <el-tag style="text-align: center;background-color: #409EFF;width: 800px;height: auto">
-        <el-button id="commmit" type="primary" icon="el-icon-circle-check" style="margin-left: 60px" @click="commit">
+      <el-tag style="text-align: center;background-color: #409EFF;width: 100%;height: auto">
+        <el-button id="commmit" type="primary" style="margin-left: 60px" @click="commit">
+          <el-icon color="#FFFFFF">
+            <Check />
+          </el-icon>
           提交
         </el-button>
         <el-button id="clear" type="primary" icon="el-icon-delete-solid"  style="margin-left: 60px" @click="clear">
+          <el-icon color="#FFFFFF">
+            <Close />
+          </el-icon>
           清空
-        </el-button>
-        <el-button id="refresh" type="primary" icon="el-icon-refresh-right" style="margin-left: 60px" @click="refresh">
-          刷新
         </el-button>
       </el-tag>
 
@@ -130,11 +133,10 @@
 
 <script>
 import http from '@/axios/http'
-import {Select} from "@element-plus/icons-vue";
+import {Refresh, Select} from "@element-plus/icons-vue";
 export default {
   name: "OutDoctorMedrecord",
-  components: {Select},
-  inject: ["reload"],
+  components: {Refresh},
   data() {
     return {
       // 当前选择的病人信息，通过父级获得
@@ -199,15 +201,6 @@ export default {
         })
   },
   methods: {
-    // 刷新，重新调用一次查询
-    refresh() {
-      http.get('/outdoctors/'+ this.presentPatient.recordId)
-          .then(response => {
-            if (response.data.data != null) {
-              this.medrecord = response.data.data
-            }
-          })
-    },
     // 删除，把medrecord里的特定值设置为空
     clear() {
       this.medrecord.complaint = ''

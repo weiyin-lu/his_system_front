@@ -101,12 +101,9 @@
             <!-- ------------------------------------------门诊病历首页部分------------------------------------------- -->
               <el-tab-pane name="1" label="病历首页"></el-tab-pane>
             <!-- ------------------------------------------------检查申请部分--------------------------------------------- -->
-              <el-tab-pane name="2" label="检查申请">
-              </el-tab-pane>
-            <!-- -----------------------------------------------门诊确诊界面-------------------------------------------------------------- -->
-            <el-tab-pane name="3" label="门诊确诊"></el-tab-pane>
+              <el-tab-pane name="2" label="检查申请"></el-tab-pane>
             <!-- ----------------------------------------------------成药处方界面---------------------------------------------- -->
-            <el-tab-pane name="4" label="药品处方"></el-tab-pane>
+            <el-tab-pane name="3" label="药品处方"></el-tab-pane>
             <router-view :key="timer"/>
           </el-tabs>
         </el-main>
@@ -183,7 +180,7 @@ export default {
         message:'患者选择刷新按钮,重新执行查询操作',
         type: 'success'
       });
-      location.reload();
+      this.$router.push('/outdoctor');
     },
     // 用户注销
     // 1. 二次确认
@@ -224,13 +221,10 @@ export default {
         this.$router.push('/outdoctor/medrecord')
       }
       else if(tab.props.name=='2'){
-        this.$router.push('/outdoctor/checkout');
+        this.$router.push('/outdoctor/check');
       }
       else if(tab.props.name=='3'){
-        // this.$router.push({path:'/Confirm'});
-      }
-      else if(tab.props.name=='4'){
-        // this.$router.push({path:'/medicine'});
+        this.$router.push('/outdoctor/med');
       }
     },
   },
