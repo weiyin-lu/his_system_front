@@ -17,6 +17,7 @@ import AdminRegister from "@/components/admin/AdminRegister.vue";
 
 import outPatientMain from "@/components/outpatient/OutPatientMain.vue";
 import outPatientCore from "@/components/outpatient/OutPatientCore.vue";
+import outPatientManage from "@/components/outpatient/OutPatientManage.vue";
 
 import checkOutCore from "@/components/checkout/CheckOutCore.vue";
 import checkoutMain from "@/components/checkout/CheckoutMain.vue";
@@ -60,6 +61,10 @@ const routes = [
     path: '/outpatient/core',
     component:outPatientCore
   },
+  {
+    path: '/outpatient/manage',
+    component:outPatientManage
+  },
   //   基本信息维护模块
   {
     path: '/admin',
@@ -85,6 +90,7 @@ const routes = [
       },
     ]
   },
+  //   医技模块
   {
     path: '/checkout',
     name: 'checkout',
