@@ -7,7 +7,7 @@ import outDoctorCheckcout from "@/components/outdoctor/OutDoctorCheckcout.vue";
 import outDoctorMedrecord from "@/components/outdoctor/OutDoctorMedrecord.vue";
 
 import medicineMain from '@/components/medicine/MedicineMain.vue'
-import medicineCore from '@/components/medicine/MedicineCore.vue'
+import medicineCore   from '@/components/medicine/MedicineCore.vue'
 import medicineManage from '@/components/medicine/MedicineManage.vue'
 
 import Admin from '@/views/Admin.vue'
@@ -40,20 +40,6 @@ const routes = [
       {path: '/outdoctor/check',name:'check',component:outDoctorCheckcout},
       {path: '/outdoctor/med',name:'med',component:outDoctorMedicine}
     ]
-  },
-  //   药房模块
-  {
-    path: '/medicine',
-    component: medicineMain,
-  },
-  {
-    path: '/medicine/core',
-    name:'core',
-    component:medicineCore},
-  {
-    path: '/medicine/manage',
-    name:'manage',
-    component:medicineManage
   },
   //   挂号模块
   {
@@ -108,7 +94,23 @@ const routes = [
     path: '/checkout/manage',
     name: 'manage',
     component: checkoutManage
-  }
+  },
+  //   药房模块
+  {
+    path: '/medicine',
+    component: medicineMain
+  },
+  {
+    path: '/medicine/core',
+    name:'core',
+    component:medicineCore
+  },
+  {
+    path: '/medicine/manage',
+    name:'manage',
+    component:medicineManage
+  },
+
 ]
 
 const router = createRouter({

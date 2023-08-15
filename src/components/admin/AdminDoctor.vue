@@ -21,8 +21,18 @@
       </template>
     </el-page-header>
 
+    <el-autocomplete :fetch-suggestions="doctornameselect" v-model="search.name" size="default" placeholder="用户名" />
+    <el-autocomplete :fetch-suggestions="doctortypeselect" v-model="search.userType" size="default" placeholder="用户类型" />
+    <el-autocomplete :fetch-suggestions="doctortitleselect" v-model="search.title" size="default" placeholder="职称" />
+    <el-button style="margin-right: 100px" size="default" @click="getbylist()">查询</el-button>
+
+    <el-button @click="kong" type="primary"><el-icon><RefreshLeft /></el-icon>清空</el-button>
+
     <!--添加医生-->
     <el-button type="primary" @click="isaddshow = true">添加医生</el-button>
+
+
+
 
     <!--医生列表表格-->
 		<el-table :data="doctorlist" stripe style="width: 100%;height: 800px;">
@@ -33,13 +43,7 @@
 			<el-table-column prop="deptType" label="科室类型" />
 			<el-table-column prop="deptFunc" label="科室从属" />
 			<el-table-column prop="regName" label="挂号等级" />
-			<el-table-column align="right">
-				<template #header>
-					<el-autocomplete :fetch-suggestions="doctornameselect" v-model="search.name" size="small" placeholder="用户名" />
-					<el-autocomplete :fetch-suggestions="doctortypeselect" v-model="search.userType" size="small" placeholder="用户类型" />
-					<el-autocomplete :fetch-suggestions="doctortitleselect" v-model="search.title" size="small" placeholder="职称" />
-					<el-button size="small" @click="getbylist()">查询</el-button>
-				</template>
+			<el-table-column label="操作" align="right">
 				<template #default="scope">
 					<el-button size="small" @click="toupdateline(scope.row)" >修改</el-button>
 					<el-button size="small" type="danger" @click="deleteone(scope.row.docId)">删除</el-button>
@@ -343,11 +347,11 @@
 
       //点击输入框时提示用户名的值
       doctornameselect(queryString,cb) {
-        this.newArray = this.AllArray.map(item=>{
+        let newArray = this.AllArray.map(item=>{
           item.value = item.name;
           return item;
         });
-        let results = queryString ? this.newArray.filter((name) => name.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0) : this.newArray;
+        let results = queryString ? newArray.filter((name) => name.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0) : newArray;
         // 调用 callback 返回建议列表的数据
         cb(results);
       },
@@ -459,6 +463,12 @@
             message: '已取消退出'
           })
         })
+      },
+      // 清空
+      kong() {
+        this.search.name=""
+        this.search.userType=""
+        this.search.title=""
       },
 
 		},

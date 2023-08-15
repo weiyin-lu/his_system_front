@@ -1,487 +1,432 @@
 <template>
-<el-row>
-  <el-col :span="4"><div class="h"><el-button type="primary" class="el-icon-s-home" @click="re">主菜单</el-button> </div></el-col>
-  <el-col :span="16"><div class="hh">欢迎来到药品管理</div></el-col>
-  <el-col :span="4"><div class="h">
-    <el-popover
-            placement="left"
-            width="500"
-            trigger="hover">
-      <el-table :data="getDocInfo">
-        <el-table-column width="100" prop="docId" label="医生编号"></el-table-column>
-        <el-table-column width="100" prop="name" label="医生姓名"></el-table-column>
-        <el-table-column width="100" prop="dept" label="部门名称"></el-table-column>
-        <el-table-column width="100" prop="userType" label="医生类别"></el-table-column>
-        <el-table-column width="100" prop="title" label="医生级别"></el-table-column>
-      </el-table>
-      <el-button slot="reference" type="primary" class="el-icon-user">你好！{{name1}}</el-button>
-    </el-popover>
-  </div></el-col>
-  <el-col :span="24" style="margin-top: 40px"></el-col>
-  <el-col :span="7"><div><el-input v-model.trim="name" placeholder="请输入药品名称" style="width: 80%;" clearable></el-input></div></el-col>
-  <el-col :span="7"><div><el-input v-model.trim="input" placeholder="请输入药品助记符" style="width: 80%;" clearable></el-input></div></el-col>
-  <el-col :span="3"><div><el-button class="el-icon-search" @click="search" type="primary">查询药品</el-button></div></el-col>
-  <el-col :span="3">
-    <div>
-      <el-button class="el-icon-folder-add" @click="newdialogVisible=true" type="primary">新增药品</el-button>
-      <el-dialog title="编辑" :visible.sync="newdialogVisible"  top = "1%" width="28%" :append-to-body="true" @close="clear">
-        <div style="height: 70vh;min-width: auto;overflow: scroll">
-          <el-form v-model="form" style="display: inline-block" ref="dataForm" label-position="right" label-width="80px">
-            <el-form-item label="药品名称:" :label-width="formLabelWidth" prop="name">
-              <el-input v-model.trim="form.name" placeholder="输入药品名称" autocomplete="off"></el-input>
-            </el-form-item>
-            <el-form-item label="拼音助记符:" :label-width="formLabelWidth" prop="code">
-              <el-input v-model.trim="form.code" placeholder="输入拼音助记符" autocomplete="off"></el-input>
-            </el-form-item>
-            <el-form-item label="药品规格:" :label-width="formLabelWidth" prop="standard">
-              <el-input v-model.trim="form.standard" placeholder="输入药品规格" autocomplete="off"></el-input>
-            </el-form-item>
-            <el-form-item label="药品剂型:" :label-width="formLabelWidth" prop="dosage">
-              <el-input v-model.trim="form.dosage" placeholder="输入药品剂型" autocomplete="off"></el-input>
-            </el-form-item>
-            <el-form-item label="药品单位:" :label-width="formLabelWidth" prop="unit">
-              <el-input v-model.trim="form.unit" placeholder="输入药品单位" autocomplete="off"></el-input>
-            </el-form-item>
-            <el-form-item label="药品单价:" :label-width="formLabelWidth" prop="cost">
-              <el-input v-model.trim="form.cost" placeholder="输入药品单价" autocomplete="off"></el-input>
-            </el-form-item>
-
-            <el-form-item label="药品类型:" :label-width="formLabelWidth" prop="type">
-              <template>
-                <el-select v-model.trim="form.type" placeholder="请选择" style="width: 100.6%">
-                  <el-option
-                    v-for="item in options"
-                    :key="item.value"
-                    :label="item.label"
-                    :value="item.value">
-                  </el-option>
-                </el-select>
-              </template>
-            </el-form-item>
-            <el-form-item label="费用类型:" :label-width="formLabelWidth" prop="subject">
-              <template>
-                <el-select v-model.trim="form.subject" placeholder="请选择" style="width: 100.6%">
-                  <el-option
-                    v-for="item in options1"
-                    :key="item.value"
-                    :label="item.label"
-                    :value="item.value">
-                  </el-option>
-                </el-select>
-              </template>
-            </el-form-item>
-            <el-form-item label="药品状态:" :label-width="formLabelWidth" prop="status">
-              <el-input v-model.trim="form.status" placeholder="输入药品单价" autocomplete="off"></el-input>
-            </el-form-item>
-            <el-form-item>
-              <div style="float: right">
-                <el-button @click="newdialogVisible = false">取 消</el-button>
-                <el-button type="primary" @click="onSubmit1">确 定</el-button>
-              </div>
-            </el-form-item>
-          </el-form>
+  <div>
+    <el-row>
+      <el-col :span="4" class="hhh" @click="menu">
+        <div>
+          <el-button style="height: 40px" class="el-icon-s-home" type="primary">
+            <el-icon>
+              <HomeFilled />
+            </el-icon>
+            主菜单
+          </el-button>
         </div>
-      </el-dialog>
-    </div></el-col>
-  <el-col :span="2"><div><el-button class="el-icon-refresh" @click="refresh" type="primary">刷新</el-button></div></el-col>
+      </el-col>
+      <el-col :span="16" class="hh">
+        <div>欢迎来到药品管理</div>
+      </el-col>
+      <el-col :span="4" class="hhh">
+        <div>
+          <el-popover placement="left" width="500" trigger="hover">
+            <el-table :data="getDocInfo">
+              <el-table-column width="100" prop="docId" label="医生编号"></el-table-column>
+              <el-table-column width="100" prop="name" label="医生姓名"></el-table-column>
+              <el-table-column width="100" prop="deptName" label="部门名称"></el-table-column>
+              <el-table-column width="100" prop="userType" label="医生类别"></el-table-column>
+              <el-table-column width="100" prop="title" label="医生级别"></el-table-column>
+            </el-table>
+            <template #reference>
+              <el-button style="height: 40px" slot="reference" type="primary" class="el-icon-user">
+                <el-icon>
+                  <User />
+                </el-icon>
+                你好！{{name1}}
+              </el-button>
+            </template>
 
-  <el-col :span="2"><div><el-button class="el-icon-refresh-left" type="primary" @click="kong">清空</el-button> </div></el-col>
-  <el-col :span="24"><div>
-    <el-table  border height="740px" style="align-content: center;margin-top: 40px" :data="tableData" class="table">
-      <el-table-column
-        prop="id"
-        label="药品编号"
-        min-width="10%">
-      </el-table-column>
-      <el-table-column
-        prop="name"
-        label="药品名称"
-        min-width="9%">
-      </el-table-column>
-      <el-table-column
-        prop="code"
-        label="拼音助记码"
-        min-width="9%">
-      </el-table-column>
-      <el-table-column
-        prop="standard"
-        label="药品规格"
-        min-width="9%">
-      </el-table-column>
-      <el-table-column
-        prop="dosage"
-        label="药品剂型"
-        min-width="9%">
-      </el-table-column>
-      <el-table-column
-        prop="unit"
-        label="药品单位"
-        min-width="9%">
-      </el-table-column>
-      <el-table-column
-        prop="cost"
-        label="药品单价"
-        min-width="9%">
-      </el-table-column>
-      <el-table-column
-        prop="type"
-        label="药品类型"
-        min-width="9%">
-      </el-table-column>
-      <el-table-column
-        prop="subject"
-        label="费用类型"
-        min-width="10%">
-      </el-table-column>
-      <el-table-column
-        label="操作"
-        min-width="11%">
-        <template slot-scope="scope">
-          <el-button type="success" size="mini" @click="editDialog(scope.$index,scope.row)">编辑</el-button>
-          <el-dialog title="编辑" :visible.sync="dialogVisible"  top = "1%" width="35%" :append-to-body="true" @close="clear" style="text-align: center">
-            <div style="height: 70vh;min-width: auto;overflow: scroll">
-              <el-form v-model="form" style="display: inline-block" ref="dataForm" label-position="right" label-width="80px">
-                <el-form-item label="药品编号:" :label-width="formLabelWidth" prop="id">
-                  <el-input v-model.trim="form.id" autocomplete="off" disabled></el-input>
-                </el-form-item>
-                <el-form-item label="药品名称:" :label-width="formLabelWidth" prop="name">
-                  <el-input v-model.trim="form.name" autocomplete="off" clearable></el-input>
-                </el-form-item>
-                <el-form-item label="拼音助记符:" :label-width="formLabelWidth" prop="code">
-                  <el-input v-model.trim="form.code" autocomplete="off" clearable></el-input>
-                </el-form-item>
-                <el-form-item label="药品规格:" :label-width="formLabelWidth" prop="standard">
-                  <el-input v-model.trim="form.standard" autocomplete="off" clearable></el-input>
-                </el-form-item>
-                <el-form-item label="药品剂型:" :label-width="formLabelWidth" prop="dosage">
-                  <el-input v-model.trim="form.dosage" autocomplete="off" clearable></el-input>
-                </el-form-item>
-                <el-form-item label="药品单位:" :label-width="formLabelWidth" prop="unit">
-                  <el-input v-model.trim="form.unit" autocomplete="off" clearable></el-input>
-                </el-form-item>
-                <el-form-item label="药品单价:" :label-width="formLabelWidth" prop="cost">
-                  <el-input v-model.trim="form.cost" autocomplete="off" clearable></el-input>
-                </el-form-item>
-                <el-form-item label="药品类型:" :label-width="formLabelWidth" prop="type">
-                  <template>
-                    <el-select v-model.trim="form.type" placeholder="请选择" style="width: 100.6%">
-                      <el-option
-                        v-for="item in options"
-                        :key="item.value"
-                        :label="item.label"
-                        :value="item.value">
-                      </el-option>
-                    </el-select>
-                  </template>
-                </el-form-item>
-                <el-form-item label="费用类型:" :label-width="formLabelWidth" prop="subject">
-                  <template>
-                    <el-select v-model.trim="form.subject" placeholder="请选择" style="width: 100.6%">
-                      <el-option
-                        v-for="item in options1"
-                        :key="item.value"
-                        :label="item.label"
-                        :value="item.value">
-                      </el-option>
-                    </el-select>
-                  </template>
-                </el-form-item>
-                <el-form-item>
-                  <div style="float: right">
-                    <el-button @click="dialogVisible = false">取 消</el-button>
-                    <el-button type="primary" @click="onSubmit">确 定</el-button>
-                  </div>
-                </el-form-item>
-              </el-form>
-            </div>
-          </el-dialog>
-          <el-button type="danger" size="mini" style="margin-left: 5px" @click.native="deleteDrug(scope.row.id)">删除</el-button>
+          </el-popover>
+        </div>
+      </el-col>
+    </el-row>
+
+    <el-row style="margin-top: 40px">
+      <el-col :span="5">
+        <div>名称：<el-input v-model.trim="input1" placeholder="请输入药品名称" style="width: 60%"></el-input>
+        </div>
+      </el-col>
+      <el-col :span="5">
+        <div>药品剂型：<el-input v-model.trim="input2" placeholder="请输入药品剂型" style="width: 60%"></el-input>
+        </div>
+      </el-col>
+      <el-col :span="5">
+        <div>种类：<el-input v-model.trim="input3" placeholder="请输入种类" style="width: 60%"></el-input>
+        </div>
+      </el-col>
+
+      <el-col :span="3">
+        <div>
+          <el-button class="el-icon-search" @click="search" type="primary">查询</el-button>
+        </div>
+      </el-col>
+      <el-col :span="3">
+        <div>
+          <el-button class="el-icon-refresh" @click="refresh" type="primary">刷新</el-button>
+        </div>
+      </el-col>
+      <el-col :span="3">
+        <div>
+          <el-button class="el-icon-news" type="primary" @click="formVisible=true">添加药品</el-button>
+        </div>
+      </el-col>
+    </el-row>
+    <el-col>
+
+      <!--   药品信息-->
+      <el-table :data="tableData" style="width: 100%;margin-top: 50px" border height="600px">
+        <el-table-column prop="code" label="药品编码" min-width="15%">
+        </el-table-column>
+        <el-table-column prop="name" label="药品名称" min-width="15%">
+        </el-table-column>
+        <el-table-column prop="standard" label="药品规格" min-width="15%">
+        </el-table-column>
+        <el-table-column prop="dosage" label="药品剂型" min-width="15%">
+        </el-table-column>
+        <el-table-column prop="unit" label="药品单位" min-width="15%">
+        </el-table-column>
+        <el-table-column prop="cost" label="药品单价" min-width="15%">
+        </el-table-column>
+        <el-table-column prop="type" label="种类" min-width="15%">
+        </el-table-column>
+        <el-table-column prop="subject" label="费用类型" min-width="15%">
+        </el-table-column>
+
+        <el-table-column label="操作" min-width="15%">
+          <template #default="scope">
+            <el-button size="small" type="success" @click="handleChange(scope.row)" style="margin-left: 5px">编辑</el-button>
+            <el-button size="small" type="danger" @click="handleDelete(scope.row)">删除</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+
+
+      <!--   修改窗口-->
+      <el-dialog v-model="outerVisible">
+        <el-form :model="updateline" label-position="right" label-width="100px" style="max-width: 460px">
+          <el-form-item prop="code" label="药品编码">
+            <el-input v-model="updateline.code" />
+          </el-form-item>
+          <el-form-item prop="name" label="药品名称">
+            <el-input v-model="updateline.name" />
+          </el-form-item>
+          <el-form-item prop="standard" label="药品规格">
+            <el-input v-model="updateline.standard" />
+          </el-form-item>
+          <el-form-item prop="dosage" label="药品剂型">
+            <el-input v-model="updateline.dosage" />
+          </el-form-item>
+          <el-form-item prop="unit" label="药品单位">
+            <el-input v-model="updateline.unit" />
+          </el-form-item>
+          <el-form-item prop="cost" label="药品单价">
+            <el-input v-model="updateline.cost" />
+          </el-form-item>
+          <el-form-item prop="type" label="种类">
+            <el-input v-model="updateline.type" />
+          </el-form-item>
+          <el-form-item prop="subject" label="费用类型">
+            <el-input v-model="updateline.subject" />
+          </el-form-item>
+        </el-form>
+        <template #footer>
+					<span class="dialog-footer">
+						<el-button type="primary" @click="updateone">确定</el-button>
+						<el-button @click="outerVisible = false">取消</el-button>
+					</span>
         </template>
-      </el-table-column>
-    </el-table>
-  </div></el-col>
-</el-row>
+      </el-dialog>
+
+      <!--  添加窗口-->
+      <el-dialog v-model="formVisible">
+        <el-form :model="addline" label-position="right" label-width="100px" style="max-width: 460px">
+          <el-form-item prop="code" label="药品编码">
+            <el-input v-model="addline.code" />
+          </el-form-item>
+          <el-form-item prop="name" label="药品名称">
+            <el-input v-model="addline.name" />
+          </el-form-item>
+          <el-form-item prop="standard" label="药品规格">
+            <el-input v-model="addline.standard" />
+          </el-form-item>
+          <el-form-item prop="dosage" label="药品剂型">
+            <el-input v-model="addline.dosage" />
+          </el-form-item>
+          <el-form-item prop="unit" label="药品单位">
+            <el-input v-model="addline.unit" />
+          </el-form-item>
+          <el-form-item prop="cost" label="药品单价">
+            <el-input v-model="addline.cost" />
+          </el-form-item>
+          <el-form-item prop="type" label="种类">
+            <el-input v-model="addline.type" />
+          </el-form-item>
+          <el-form-item prop="subject" label="费用类型">
+            <el-input v-model="addline.subject" />
+          </el-form-item>
+        </el-form>
+
+        <template #footer>
+					<span class="dialog-footer">
+						<el-button type="primary" @click="addone">确定</el-button>
+						<el-button @click="formVisible = false;">取消</el-button>
+					</span>
+        </template>
+      </el-dialog>
+    </el-col>
+  </div>
 </template>
 
 <script>
-    export default {
-        name: "OutpatientDrugManagement",
-        data(){
-            return{
-                dialogVisible:false,
-                newdialogVisible:false,
-                name:'',
-                name1:'',
-                getDocInfo:[],
-                input:'',
-                tableData:[{
-                    id:'',
-                    name:'',
-                    code:'',
-                    standard:'',
-                    dosage:'',
-                    unit:'',
-                    cost:'',
-                    type:'',
-                    subject:'',
-                }],
-                options:[{
-                    value:'中药',
-                    label:'中药',
-                },{
-                    value:'西药',
-                    label:'西药'
-                }],
-                options1:[/*{
-                    value:'中药费',
-                    label:'中药费',
-                },{
-                    value:'西药费',
-                    label:'西药费'
-                }*/],
-                form:{
-                    id:'',
-                    name:'',
-                    code:'',
-                    standard:'',
-                    dosage:'',
-                    unit:'',
-                    cost:'',
-                    type:'',
-                    subject:'',
-                    status:'',
-                },
-                formLabelWidth: '120px'
-            }
-        },
-        mounted:function(){
-            this.loadMedicine()
-            this.getDocInfoFuc()
-            this.subjectLoad()
-        },
-        methods:{
-          subjectLoad(){
-            let _this = this;
-            axios.get("http://localhost:20910/fee/findAll").then(function(resp){
-              for(let item of resp.data) {
-                _this.options1.push({
-                  'value': item.subject,
-                  'lable': item.subject,
-                });
-              }
-            });
-          },
-          getDocInfoFuc(){
-            let _this=this
-            axios.get("http://localhost:20910/api/getDocInfo/"+this.$store.state.docId,{
-              DocId:this.$store.state.docId
-            }).then(resp=>{
-              if(resp && resp.data.code===200){
-                this.getDocInfo=[]
-                _this.getDocInfo.push(resp.data.result)
-                this.name1=_this.getDocInfo[0].name
+import http from '@/axios/http'
+import {
+  HomeFilled,
+  User
+} from "@element-plus/icons-vue";
+
+export default {
+  name: "MedicalTechManage",
+  components: {
+    User,
+    HomeFilled
+  },
+  data() {
+    return {
+      tempTemplate: [],
+      tempItem: [],
+      type: '',
+      storeMedName: [],
+      temp: [],
+      Medicine: [],
+      NondrugData: [],
+      title: '',
+      info: '',
+      table: false,
+      tableData: [],
+      Data: [],
+      name: '',
+      name1: '',
+      getDocInfo: [],
+
+
+      //mynewvalue
+      updateline: {},
+      addline: {
+        code: "",
+        name: "",
+        standard: "",
+        deptId:0,
+        dosage: "",
+        unit: "",
+        cost:"",
+        type: "",
+        subject: "",
+      },
+      //修改窗口
+      outerVisible: false,
+      //添加窗口
+      formVisible: false,
+
+      //科室列表
+      deptlist:[],
+
+      options: [],
+
+      adddeptName:"",
+      updatedeptName:"",
+
+      //搜索种类
+      options1: [{
+        value: 0,
+        label: '检查 '
+      }, {
+        value: 1,
+        label: '检验 '
+      },{
+        value: 2,
+        label: '处置'
+      }],
+
+      AllData:[],
+      newArray:[],
+
+    //   查询绑定值
+      input1:"",
+      input2:"",
+      input3:"",
+
+    }
+  },
+  mounted() {
+    this.loadtable()
+    this.getDocInfoFuc()
+  },
+
+  methods: {
+
+    // 药品列表
+    loadtable() {
+      http.get('/medicines/manage/').then(response => {
+        // console.log(response.data)
+        if (response.data.code === "SUCCESS") {
+          this.tableData = response.data.data
+          this.AllData = response.data.data
+        } else {
+          this.$message.error("身份过期，请重新登录")
+          this.$router.push("/")
+        }
+      })
+    },
+
+    search(){
+      this.newArray=this.AllData.filter(array => array.name.includes(this.input1))
+      this.newArray=this.newArray.filter(array => array.dosage.includes(this.input2))
+      this.newArray=this.newArray.filter(array => array.type.includes(this.input3))
+
+      this.tableData=this.newArray
+
+    },
+
+
+    refresh(){
+      this.input1=''
+      this.input2=''
+      this.input3=''
+      this.loadtable()
+    },
+
+    // 回到主菜单
+    menu() {
+      this.$router.push('/medicine')
+    },
+
+    // 删除按钮点击后
+    handleDelete(row) {
+      this.$confirm('此操作将永久删除, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        http.delete('/medicines/manage/' + row.id).then(response => {
+          if (response.data.code === "SUCCESS") {
+            this.$message.success("删除成功")
+            this.loadtable()
+          } else {
+            this.$message.error(response.data.msg)
+          }
+        })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        })
+      })
+    },
+
+    // 用户信息
+    getDocInfoFuc() {
+      let item = sessionStorage.getItem("userinfo");
+      this.getDocInfo[0] = JSON.parse(item)
+      this.name1 = this.getDocInfo[0].name
+
+    },
+
+    // 点击修改按钮传值，打开窗口
+    handleChange(row) {
+      this.updateline = JSON.parse(JSON.stringify(row))
+      this.outerVisible = true
+    },
+
+    // 修改后的值传入后端修改
+    updateone() {
+      if (this.updateline.code.trim().length < 1 || this.updateline.name.trim().length < 1 ||
+          this.updateline.standard.trim().length < 1 || this.updateline.dosage.trim().length < 1 ||
+          this.updateline.unit.trim().length < 1 || this.updateline.cost.toString().trim().length < 1 ||
+          this.updateline.type.trim().length < 1 || this.updateline.subject.trim().length < 1) {
+        this.$message({
+          type: 'error',
+          message: '请完整填入信息！'
+        });
+      } else {
+        http.put("/medicines/manage/", this.updateline)
+            .then(response => {
+              // console.log(response.data)
+              if (response.data.code === "SUCCESS") {
+                this.$message.success("修改成功")
+                this.loadtable()
+                this.outerVisible = false
+
+              } else {
+                this.$message.error(response.data.msg)
               }
             })
+      }
+    },
 
-          },
-            editDialog(index,row){
-                this.dialogVisible=true
-                this.form={
-                    id:row.id,
-                    name:row.name,
-                    code:row.code,
-                    standard:row.standard,
-                    dosage:row.dosage,
-                    unit:row.unit,
-                    cost:row.cost,
-                    type:row.type,
-                    subject:row.subject,
-                }
-            },
-            clear(){
-              this.form={
-                  id:'',
-                  name:'',
-                  code:'',
-                  standard:'',
-                  dosage:'',
-                  unit:'',
-                  cost:'',
-                  type:'',
-                  subject:'',
+    // 添加后的值传入后端添加
+    addone() {
+      if (this.addline.code.trim().length < 1 || this.addline.name.trim().length < 1 ||
+          this.addline.standard.trim().length < 1 || this.addline.dosage.trim().length < 1 ||
+          this.addline.unit.trim().length < 1 || this.addline.cost.toString().trim().length < 1 ||
+          this.addline.type.trim().length < 1 || this.addline.subject.trim().length < 1) {
+        this.$message({
+          type: 'error',
+          message: '请完整填入信息！'
+        });
+      } else {
+        http.put("/medicines/manage/", this.addline)
+            .then(response => {
+              // console.log(response.data)
+              if (response.data.code === "SUCCESS") {
+                this.$message.success("添加成功")
+                this.loadtable()
+                this.formVisible = false
+
+                Object.keys(this.addline).forEach(function (key) {
+                  this[key] = ""
+                },this.addline)
+
+              } else {
+                this.$message.error(response.data.msg)
               }
-            },
-            refresh(){
+            })
+      }
+    },
 
-                this.loadMedicine()
-            },
-          kong(){
-            this.input=''
-            this.name=''
-          },
-            loadMedicine(){
-                let _this = this
-                axios.get('http://localhost:20910/api/medical').then(resp => {
-                    if (resp) {
-                        _this.tableData = resp.data.result
-                        console.log(resp.data.result)
-                    }
-                })
-            },
-            re(){
-                this.$router.replace('/OutpatientDepartment')
-            },
-            search(){
-                if(this.input && !this.name){
-                    axios.get('http://localhost:20910/api/searchMedicalByCode/'+this.input,{
-                        code:this.input
-                    }).then(resp => {
-                        if (resp&&resp.data.code === 200) {
-                            this.tableData=resp.data.result
-                            if(this.tableData.length===0){
-                                this.$message.error("查询失败")
-                            }else{
-                                this.$message({
-                                    message:'查询成功',
-                                    type:'success'
-                                })
-                            }
-                        }
-                    })
-                }else if(this.name && !this.input){
-                    axios.get('http://localhost:20910/api/searchMedicalByName/'+this.name,{
-                        name:this.name
-                    }).then(resp => {
-                        if (resp&&resp.data.code === 200) {
-                            this.tableData=resp.data.result
-                            if(this.tableData.length===0){
-                                this.$message.error("查询失败")
-                            }else{
-                                this.$message({
-                                    message:'查询成功',
-                                    type:'success'
-                                })
-                            }
-                        }
-                    })
-                }else if(this.name && this.input){
-                    axios.get('http://localhost:20910/api/searchMedicalByNameAndCode/'+this.name+"/"+this.input,{
-                        name:this.name,
-                        code:this.input
-                    }).then(resp => {
-                        if (resp&&resp.data.code === 200) {
-                            this.tableData=resp.data.result
-                            if(this.tableData.length===0){
-                                this.$message.error("查询失败")
-                            }else{
-                                this.$message({
-                                    message:'查询成功',
-                                    type:'success'
-                                })
-                            }
-                        }
-                    })
-                }else {
-                    this.$message.error("请输入查询条件")
-                }
-            },
-            deleteDrug(id) {
+    //点击输入框时提示科室名的值
+    deptnameselect(queryString,cb) {
+      this.newArray = this.deptlist.map(item=>{
+        item.value = item.deptName;
+        return item;
+      });
+      let results = queryString ? this.newArray.filter((name) => name.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0) : this.newArray;
+      // 调用 callback 返回建议列表的数据
+      cb(results);
+    },
 
-                this.$confirm('此操作将永久删除该药品, 是否继续?', '提示', {
-                    confirmButtonText: '确定',
-                    cancelButtonText: '取消',
-                    type: 'warning'
-                }).then(() => {
-                        this.$axios
-                            .post('http://localhost:20910/api/deleteMedical/'+id, {id: id}).then(resp => {
-                            if (resp) {
-                              let s = resp.data
-                                this.loadMedicine()
-                                if(s === 0){
-                                  this.$message.error("删除失败！其他数据使用中！")
-                                }else{
-                                  this.$message({
-                                    message:'删除成功',
-                                    type:'success'
-                                  })
-                                }
-                            }
-                        })
-                    }
-                ).catch(() => {
-                    this.$message({
-                        type: 'info',
-                        message: '已取消删除'
-                    })
-                })
-            },
-            onSubmit1(){
-                this.$axios.post('http://localhost:20910/api/insert',{
-                    id:this.form.id,
-                    name:this.form.name,
-                    code:this.form.code,
-                    standard:this.form.standard,
-                    dosage:this.form.dosage,
-                    unit:this.form.unit,
-                    cost:this.form.cost,
-                    type:this.form.type,
-                    subject:this.form.subject,
-                    deptId:10,
-                    status:1
-                }).then(resp => {
-                    if (resp && resp.status === 200) {
-                        this.$message({
-                            message:'编辑成功',
-                            type:'success'
-                        });
-                        this.dialogVisible = false
-                        this.newdialogVisible = false
-                        this.loadMedicine()
-                    }
-                })
-            },
-            onSubmit(){
-                this.$axios.post('http://localhost:20910/api/update',{
-                    id:this.form.id,
-                    name:this.form.name,
-                    code:this.form.code,
-                    standard:this.form.standard,
-                    dosage:this.form.dosage,
-                    unit:this.form.unit,
-                    cost:this.form.cost,
-                    type:this.form.type,
-                    subject:this.form.subject,
-                    deptId:10,
-                    status:1
-                }).then(resp => {
-                    if (resp && resp.status === 200) {
-                        this.$message({
-                            message:'编辑成功',
-                            type:'success'
-                        });
-                        this.dialogVisible = false
-                        this.newdialogVisible = false
-                        this.loadMedicine()
-                    }
-                })
-            }
-        }
-    }
+    // 添加或修改的科室发生变化时
+    selectbykeshi(deptName) {
+      let newarray=this.deptlist.filter(array => array.deptName === deptName)
+      if (newarray.length === 0) {
+        this.addline.deptId=""
+        this.updateline.deptId=""
+      }else {
+        this.addline.deptId=newarray[0].deptId
+        this.updateline.deptId=newarray[0].deptId
+      }
+    },
+  }
+}
 </script>
 
 <style scoped>
-  .table{
-    border: 1px solid #66b1ff;
-  }
-  .h{
-    background-color: #409EFF ;
+.hhh {
+  background-color: #409EFF;
+  height: 40px;
+}
 
-  }
-  .hh{
+.hh {
 
-    border: 5px solid #8c939d;
-    background-color: #8c939d;
-    height: 30px;
+  border: 5px solid #8c939d;
+  background-color: #8c939d;
+  height: 40px;
 
-  }
+}
 </style>

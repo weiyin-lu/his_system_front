@@ -31,6 +31,8 @@
         </div>
       </el-col>
 		</el-row>
+
+
 		<el-row style="margin-top: 40px">
 			<el-col :span="6">
 				<el-input clearable placeholder="请输入患者名称" v-model.trim="name" type="text" style="width: 80%"></el-input>
@@ -48,6 +50,8 @@
 				<el-button @click="kong" type="primary"><el-icon><RefreshLeft /></el-icon>清空</el-button>
 			</el-col>
 		</el-row>
+
+
 		<el-col :span="24">
 			<div>
         <el-table :data="patientlist" border>

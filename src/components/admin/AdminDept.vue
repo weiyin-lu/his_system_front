@@ -21,6 +21,12 @@
 			</template>
 		</el-page-header>
 
+    <!-- 模糊搜索输入框 -->
+    <el-autocomplete :fetch-suggestions="deptnameselect" style="width: 260px;" v-model="search.deptName" size="default" placeholder="科室名称" />
+    <el-autocomplete :fetch-suggestions="depttypeselect" style="width: 260px;" v-model="search.deptType" size="default" placeholder="科室分类" />
+    <el-autocomplete :fetch-suggestions="deptfuncselect" style="width: 260px;" v-model="search.deptFunc" size="default" placeholder="科室类型" />
+    <el-button style="width: 100px;margin-right: 100px" size="default" @click="getbylist()">查询</el-button>
+
 		<!--添加科室-->
 		<el-button type="primary" @click="isaddshow = true">添加科室</el-button>
 
@@ -33,14 +39,7 @@
 			<el-table-column prop="deptType" label="科室分类" width="180" />
 			<el-table-column prop="deptFunc" label="科室类型" width="180" />
 
-			<el-table-column align="right">
-				<template #header>
-					<!-- 模糊搜索输入框 -->
-					<el-autocomplete :fetch-suggestions="deptnameselect" style="width: 260px;" v-model="search.deptName" size="small" placeholder="科室名称" />
-					<el-autocomplete :fetch-suggestions="depttypeselect" style="width: 260px;" v-model="search.deptType" size="small" placeholder="科室分类" />
-					<el-autocomplete :fetch-suggestions="deptfuncselect" style="width: 260px;" v-model="search.deptFunc" size="small" placeholder="科室类型" />
-					<el-button style="width: 100px;" size="small" @click="getbylist()">查询</el-button>
-				</template>
+			<el-table-column label="操作" align="right">
 				<template #default="scope">
 					<!-- 获取这一行数据进行修改 -->
 					<el-button size="small" @click="toupdateline(scope.row)">修改</el-button>
@@ -192,9 +191,9 @@
 
 			// 修改后的值传入后端修改
 			updateone() {
-        if(this.addline.deptName.trim().length < 1 ||
-            this.addline.deptType.trim().length < 1 ||
-            this.addline.deptFunc.trim().length < 1 ){
+        if(this.updateline.deptName.trim().length < 1 ||
+            this.updateline.deptType.trim().length < 1 ||
+            this.updateline.deptFunc.trim().length < 1 ){
           this.$message({
             type: 'error',
             message: '请完整填入信息！'
@@ -225,7 +224,7 @@
             message: '请完整填入信息！'
           });
         }else{
-          http.post("/depts/add", this.addline)
+          http.put("/depts/add", this.addline)
               .then(response => {
                 // console.log(response.data)
                 if (response.data.code === "SUCCESS") {

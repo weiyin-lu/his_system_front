@@ -48,9 +48,6 @@
               <el-button type="primary" @click.native="h4">医技管理</el-button>
             </div>
           </el-col>
-          <el-col :span="24">
-            <div class="row"></div>
-          </el-col>
         </el-row>
 			</el-col>
 		</el-row>
@@ -75,12 +72,6 @@
 		},
 		methods: {
 			h1() {
-				this.$router.push('/checkout/core')
-			},
-			h2() {
-				this.$router.push('/checkout/core')
-			},
-			h3() {
 				this.$router.push('/checkout/core')
 			},
 			h4() {

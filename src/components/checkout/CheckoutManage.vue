@@ -227,13 +227,13 @@
 				//mynewvalue
 				updateline: {},
 				addline: {
-					code: "",
-					name: "",
-					price: "",
-					standard: "",
-					deptId: "",
-					type: "",
-					subject: "",
+          code: "",
+          name: "",
+          price: "",
+          standard: "",
+          deptId: "",
+          type: "",
+          subject: "",
 				},
 				//修改窗口
 				outerVisible: false,
@@ -355,7 +355,7 @@
 
       // 点击修改按钮传值，打开窗口
 			handleChange(row) {
-				this.updateline = row
+				this.updateline = JSON.parse(JSON.stringify(row))
         this.updatedeptName = this.deptlist.find(obj => obj.deptId === row.deptId)?.deptName
 				this.outerVisible = true
 			},
