@@ -217,7 +217,6 @@
 					}
 				})
 			},
-
       // 根据recordid获取数据
       selectbyrecordid(item) {
         http.get("/checkouts/"+item.recordId).then(response => {
@@ -229,7 +228,6 @@
           }
         })
       },
-
       // 回到主菜单
 			menu() {
 				this.$router.push('/checkout')
@@ -245,40 +243,40 @@
         newArray = newArray.filter(array => array.recordId.toString().includes(this.keywords))
         this.patientlist = newArray
       },
-			  insertTemp(row){
-          console.log(row)
-          this.checkdto.id=""
-			    this.checkdto.results = ''
-			    this.inputVisible=true
-          this.templist=row
-          this.checkdto.id=row.id
-			  },
-			  insertResults(){
-          console.log(this.checkdto)
-          http.put('/checkouts/',this.checkdto).then(response => {
-            if (response.data.code === "SUCCESS") {
-              this.$message.success("录入成功")
-              this.inputVisible=false
-            } else {
-              this.$message.error(response.data.msg)
-            }
-          })
-			  },
-			  // cancel(row){
-			  //   this.$axios.post('http://localhost:20910/api/InspectUpdateTakeMed0/' + this.$store.state.docId + '/' + row.recordId + '/' + row.costName, {
-			  //     docId: this.$store.state.docId,
-			  //     recordId: row.recordId,
-			  //     costName: row.costName
-			  //   }).then(resp => {
-			  //     if (resp && resp.data.code === 200) {
-			  //       this.$message({
-			  //         message: '取消成功',
-			  //         type: 'success'
-			  //       })
-			  //       this.loadPatient()
-			  //     }
-			  //   })
-			  // },
+      insertTemp(row){
+        console.log(row)
+        this.checkdto.id=""
+        this.checkdto.results = ''
+        this.inputVisible=true
+        this.templist=row
+        this.checkdto.id=row.id
+      },
+      insertResults(){
+        console.log(this.checkdto)
+        http.put('/checkouts/',this.checkdto).then(response => {
+          if (response.data.code === "SUCCESS") {
+            this.$message.success("录入成功")
+            this.inputVisible=false
+          } else {
+            this.$message.error(response.data.msg)
+          }
+        })
+      },
+      // cancel(row){
+      //   this.$axios.post('http://localhost:20910/api/InspectUpdateTakeMed0/' + this.$store.state.docId + '/' + row.recordId + '/' + row.costName, {
+      //     docId: this.$store.state.docId,
+      //     recordId: row.recordId,
+      //     costName: row.costName
+      //   }).then(resp => {
+      //     if (resp && resp.data.code === 200) {
+      //       this.$message({
+      //         message: '取消成功',
+      //         type: 'success'
+      //       })
+      //       this.loadPatient()
+      //     }
+      //   })
+      // },
 		}
 	}
 </script>

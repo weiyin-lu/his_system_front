@@ -36,8 +36,8 @@
 			<el-table-column type="index" label="索引号码" width="180" />
 			<el-table-column prop="deptId" label="科室编码" width="180" />
 			<el-table-column prop="deptName" label="科室名称" width="180" />
-			<el-table-column prop="deptType" label="科室分类" width="180" />
-			<el-table-column prop="deptFunc" label="科室类型" width="180" />
+			<el-table-column prop="deptType" label="科室类型" width="180" />
+			<el-table-column prop="deptFunc" label="科室从属" width="180" />
 
 			<el-table-column label="操作" align="right">
 				<template #default="scope">
@@ -155,7 +155,7 @@
 
 			// 传给后端id删除这一行
 			deleteone(id) {
-				this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
+				this.$confirm('此操作将永久删除该科室, 是否继续?', '提示', {
 					confirmButtonText: '确定',
 					cancelButtonText: '取消',
 					type: 'warning'
@@ -201,7 +201,6 @@
         }else{
           http.put("/depts/update", this.updateline)
               .then(response => {
-                // console.log(response.data)
                 if (response.data.code === "SUCCESS") {
                   this.$message.success("修改成功")
                   this.getlist()
@@ -234,6 +233,7 @@
                 } else {
                   this.$message.error(response.data.msg)
                 }
+                this.addline = {}
               })
         }
 			},

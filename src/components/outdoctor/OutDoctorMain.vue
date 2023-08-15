@@ -125,7 +125,7 @@ export default {
   },
   data(){
     return {
-      page:'1',
+      page:'',
       input:'',
       pName:'',
       hit:'隐藏患者栏',
@@ -202,6 +202,11 @@ export default {
         sessionStorage.removeItem('token')
         // 3.
         this.$router.push('/');
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消'
+        });
       });
     },
     // 患者栏按钮
