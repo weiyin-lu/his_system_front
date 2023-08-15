@@ -17,7 +17,7 @@
     <el-row style="text-align: left">
       <el-tag style="margin-left: auto;background-color: lightblue;color: white;margin-top: 15px">已有项目
       </el-tag>
-      <el-table :data="consumedList" height="300px">
+      <el-table :data="consumedList" height="300px" empty-text="暂无项目">
         <el-table-column type="index" />
         <el-table-column label="项目名" prop="costName"/>
         <el-table-column label="开立时间" prop="time" :formatter="dateFormat"/>
@@ -111,7 +111,7 @@ export default {
     }
   },
   // 1. 从sessionstorage获取userinfo信息，从store获取当前病人recordId，写入到子组件对象里
-  // 2. 查询当前病人已有的医技信息,存入对象
+  // 2. 如果当前病人的recordId存在，查询当前病人已有的医技信息,存入对象
   // 3. 查询所有有效的医技处理方案,存入对象
   // 4. 查询所有部门信息,存入对象
   created() {
@@ -120,10 +120,12 @@ export default {
     this.consume.recordId = patient.recordId
     this.presentPatient = patient;
     // 2.
-    http.get('/checkouts/'+ this.presentPatient.recordId)
-        .then(response => {
-          this.consumedList = response.data.data
-        })
+    if (this.presentPatient.recordId != undefined) {
+      http.get('/checkouts/'+ this.presentPatient.recordId)
+          .then(response => {
+            this.consumedList = response.data.data
+          })
+    }
     // 3.
     http.get('/checkouts/manage/')
         .then(response => {
@@ -135,8 +137,6 @@ export default {
           this.deptList = response.data.data
         })
   },
-  // /checkouts/manage/ 查询所有有效医技列表
-  //  /checkouts/{recordId} 展示有需要处理医技信息的病人概要信息
   methods: {
     //   日期格式化方法
     dateFormat(row, column) {
@@ -161,12 +161,16 @@ export default {
       let tempDept = this.deptList.filter(value => {return value.deptId == this.consume.deptId})
       this.nodrugMsg = this.consume.costName + ' - ' + tempDept[0].deptType
     },
-    // 调用接口,提交当前consume的所有信息
+    // 调用接口,提交当前consume的所有信息，recordId必须选中
     commit() {
-      http.put('/outdoctors/consume/',this.consume)
-          .then(response => {
-            console.log(response.data)
-          })
+      if (this.consume.recordId != null) {
+        http.put('/outdoctors/consume/',this.consume)
+            .then(response => {
+              this.$message.success("项目添加成功")
+            })
+      } else {
+        this.$message.error("请先选择病人！")
+      }
     },
     // 清空输入的数据
     clear() {

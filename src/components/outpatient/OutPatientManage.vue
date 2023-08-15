@@ -52,7 +52,7 @@
                  style="{width:100%;height:350px}">
         <div>
           <p><b>当前患者处置信息</b></p>
-          <el-table :data="presentConsume">
+          <el-table :data="presentConsume" empty-text="暂无项目">
             <el-table-column type="index" label="No."/>
             <el-table-column label="处置名" prop="costName" width="200"/>
             <el-table-column label="价格" prop="price" width="80"/>

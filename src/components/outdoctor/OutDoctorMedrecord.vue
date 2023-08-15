@@ -140,7 +140,7 @@ export default {
   data() {
     return {
       // 当前选择的病人信息，通过父级获得
-      presentPatient: null,
+      presentPatient: {},
       // 所有疾病列表，查询获得
       illList:[],
       // 选中疾病列表，显示用
@@ -175,8 +175,9 @@ export default {
     }
   },
   // 1. 从sessionstorage获取userinfo信息，从store获取当前病人信息，写入到子组件对象里
-  // 2. 查询一次medrecord表，如果recordId已经存在，把信息写入到当前页面的病人信息对象，但是如果presentPatient为空，就不查询
-  // 3. 查询所有疾病列表存储到illList
+  // 2. 检查medrecord里的recordId是否生成，如果是，向后端发起请求
+  // 3. 查询一次medrecord表，如果recordId已经存在，把信息写入到当前页面的病人信息对象，如果recordId是undefined，就不查询
+  // 4. 查询所有疾病列表存储到illList ，以icdcode为依据查询当前已有的诊断
   created() {
     // 1.
     let info = JSON.parse(sessionStorage.getItem('userinfo'))
@@ -186,19 +187,22 @@ export default {
     this.medrecord.recordId = patient.recordId
     this.presentPatient = patient;
     // 2.
-    if(this.presentPatient != null) {
+    if(this.presentPatient.recordId != undefined) {
+      // 3.
       http.get('/outdoctors/'+ this.presentPatient.recordId)
           .then(response => {
             if (response.data.data != null) {
               this.medrecord = response.data.data
             }
           })
+      // 4.
+      http.get('/ill/')
+          .then(response => {
+            this.illList = response.data.data
+            this.presentIll = response.data.data.filter(item => {return item.icdCode == this.medrecord.icdCode})
+          })
     }
-    // 3.
-    http.get('/ill/')
-        .then(response => {
-          this.illList = response.data.data
-        })
+
   },
   methods: {
     // 删除，把medrecord里的特定值设置为空
@@ -215,23 +219,25 @@ export default {
     },
     // 提交病例信息的修改
     commit() {
-      http.post('/outdoctors/',this.medrecord)
-          .then(response => {
-            if(response.data.code == 'SUCCESS') {
-              this.$message.success("填入成功")
-            } else {
-              this.$message.error("填入失败")
-            }
-          })
+      if (this.medrecord.recordId != null) {
+        http.post('/outdoctors/',this.medrecord)
+            .then(response => {
+              if(response.data.code == 'SUCCESS') {
+                this.$message.success("填入成功")
+              } else {
+                this.$message.error("填入失败")
+              }
+            })
+      } else {
+        this.$message.error("请先选择病人！")
+      }
     },
     // 在dialog输入框改变时，展示病情信息
     showIll(value) {
-      console.log(value)
       this.presentIll = this.illList.filter(item => {return item.icdCode == value})
     },
     // 删除确诊信息
     remove() {
-      console.log("remove run")
       this.presentIll = []
       this.medrecord.icdCode = ''
     }
