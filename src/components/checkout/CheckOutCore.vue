@@ -71,23 +71,23 @@
                       {{scope.row.payment>0?"已付款":"未付款"}}
                     </template>
                   </el-table-column>
-                  <el-table-column prop="type" label="类型" width="150"></el-table-column>
-                  <el-table-column prop="takeMed" label="检查状态" width="100">
+                  <el-table-column prop="execute" label="检查状态" width="100">
                     <template #default="scope">
-                      {{scope.row.payment===0?"未执行":scope.row.payment===1?"执行中":"已执行"}}
+                      {{scope.row.execute===0?"未执行":"已执行"}}
                     </template>
                   </el-table-column>
-                  <el-table-column label="操作" width="250">
+                  <el-table-column label="操作" width="350">
                     <template #default="scope">
-                      <el-button v-if="scope.row.takeMed===0" size="small" type="primary" @click="start(scope.row)">开始</el-button>
-                      <el-button v-if="scope.row.takeMed===1" size="small" type="danger" @click="cancel(scope.row)">取消</el-button>
-                      <el-button v-if="scope.row.takeMed===2" size="small" type="danger" disabled>成功</el-button>
+                      <el-button v-if="scope.row.execute===0" size="small" type="primary" @click="start(scope.row)">开始</el-button>
+                      <el-button v-if="scope.row.execute===1" size="small" type="danger" disabled>成功</el-button>
 
-                      <el-button size="small" type="primary" @click="insertTemp(scope.row)" style="margin-left: 5px" :disabled="scope.row.takeMed===0">录入</el-button>
+                      <el-button size="small" type="danger" @click="updatebackid(scope.row)" style="margin-left: 5px" :disabled="scope.row.execute===0">取消检查</el-button>
+
+                      <el-button size="small" type="primary" @click="insertTemp(scope.row)" style="margin-left: 5px" :disabled="scope.row.execute===0">录入</el-button>
 
                       <el-popover placement="right-start" title="检验结果" width="200" trigger="click" :content="scope.row.results">
                         <template #reference>
-                          <el-button size="small" type="success" slot="reference" style="margin-left: 5px">信息</el-button>
+                          <el-button size="small" type="success" slot="reference" style="margin-left: 5px" :disabled="scope.row.results != null">信息</el-button>
                         </template>
                       </el-popover>
                     </template>
@@ -105,38 +105,7 @@
           <el-button type="primary" @click="inputVisible=false">关闭</el-button>
         </el-dialog>
 
-<!--				<el-table :data="tableData" border height="450px" style="margin-top: 50px">-->
-<!--					<el-table-column prop="recordId" label="病历号" min-width="16%">-->
-<!--					</el-table-column>-->
-<!--					<el-table-column prop="name" label="姓名" min-width="16%">-->
-<!--					</el-table-column>-->
-<!--					<el-table-column prop="code" label="项目编号" min-width="16%">-->
-<!--					</el-table-column>-->
-<!--					<el-table-column prop="costName" label="项目名称" min-width="16%">-->
-<!--					</el-table-column>-->
-<!--					<el-table-column prop="payment" label="付费状态" min-width="16%">-->
-<!--					</el-table-column>-->
-<!--					<el-table-column prop="type" label="类型" min-width="16%">-->
-<!--					</el-table-column>-->
-<!--					<el-table-column prop="takeMed" label="检查状态" min-width="16%">-->
-<!--					</el-table-column>-->
-<!--					<el-table-column label="操作" min-width="24%">-->
-<!--						<template slot-scope="scope">-->
-<!--							<el-button v-if="scope.row.takeMed==='未执行'" size="mini" type="primary" @click="start(scope.row)">开始</el-button>-->
-<!--							<el-button v-if="scope.row.takeMed==='执行中'" size="mini" type="danger" @click="cancel(scope.row)">取消</el-button>-->
-<!--							<el-button v-if="scope.row.takeMed==='已执行'" size="mini" type="danger" disabled>成功</el-button>-->
-<!--							<el-button size="mini" type="primary" @click="insertTemp(scope.row)" style="margin-left: 5px" :disabled="scope.row.takeMed==='未执行'">录入</el-button>-->
-<!--							<el-dialog title="录入检查结果" :visible.sync="inputVisible" width="40%">-->
-<!--								<el-input v-model.trim="result" placeholder="请输入检查结果" style="width: 60%"></el-input>-->
-<!--								<el-button type="primary" @click="insertResults(scope.row)">确认</el-button>-->
-<!--								<el-button type="primary" @click="inputVisible=false">关闭</el-button>-->
-<!--							</el-dialog>-->
-<!--							<el-popover placement="left-start" title="检验结果" width="200" trigger="click" :content="scope.row.results">-->
-<!--								<el-button size="mini" type="success" slot="reference" style="margin-left: 5px">信息</el-button>-->
-<!--							</el-popover>-->
-<!--						</template>-->
-<!--					</el-table-column>-->
-<!--				</el-table>-->
+
 			</div>
 		</el-col>
 	</div>
@@ -243,6 +212,18 @@
         newArray = newArray.filter(array => array.recordId.toString().includes(this.keywords))
         this.patientlist = newArray
       },
+
+      updatebackid(row) {
+        http.get('/medicines/back/'+row.id).then(response => {
+          if (response.data.code === "SUCCESS") {
+            this.$message.success("取消检查")
+            this.selectbyrecordid(row)
+          } else {
+            this.$message.error(response.data.msg)
+          }
+        })
+      },
+
       insertTemp(row){
         console.log(row)
         this.checkdto.id=""

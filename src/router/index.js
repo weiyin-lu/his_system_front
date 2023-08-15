@@ -87,12 +87,12 @@ const routes = [
   },
   {
     path: '/checkout/core',
-    name: 'core',
+    name: 'checkOutCore',
     component: checkOutCore
   },
   {
     path: '/checkout/manage',
-    name: 'manage',
+    name: 'checkoutManage',
     component: checkoutManage
   },
   //   药房模块
@@ -102,12 +102,12 @@ const routes = [
   },
   {
     path: '/medicine/core',
-    name:'core',
+    name:'medicineCore',
     component:medicineCore
   },
   {
     path: '/medicine/manage',
-    name:'manage',
+    name:'medicineManage',
     component:medicineManage
   },
 

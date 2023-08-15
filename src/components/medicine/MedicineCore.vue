@@ -77,7 +77,7 @@
                   </template>
                 </el-table-column>
                 <el-table-column prop="type" label="类型" width="150"></el-table-column>
-                <el-table-column prop="takeMed" label="检查状态" width="100">
+                <el-table-column prop="execute" label="检查状态" width="100">
                   <template #default="scope">
                     {{scope.row.execute===0?"未执行":"已执行"}}
                   </template>
@@ -96,12 +96,6 @@
         </el-table-column>
         <el-table-column></el-table-column>
       </el-table>
-
-      <el-dialog title="录入检查结果" v-model="inputVisible" width="40%">
-        <el-input v-model.trim="checkdto.results" placeholder="请输入检查结果" style="width: 60%"></el-input>
-        <el-button type="primary" @click="insertResults">确认</el-button>
-        <el-button type="primary" @click="inputVisible=false">关闭</el-button>
-      </el-dialog>
     </div>
   </el-col>
 </template>

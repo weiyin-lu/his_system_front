@@ -50,13 +50,6 @@
 					</el-select>
 				</div>
 			</el-col>
-			<el-col :span="5">
-				<div>种类：<el-select v-model.trim="value" placeholder="请选择">
-						<el-option v-for="item in options1" :key="item.value" :label="item.label" :value="item.value">
-						</el-option>
-					</el-select>
-				</div>
-			</el-col>
 			<el-col :span="3">
 				<div>
 					<el-button class="el-icon-search" @click="search" type="primary">查询</el-button>
@@ -91,13 +84,6 @@
             {{deptlist.find(obj => obj.deptId === scope.row.deptId)?.deptName}}
           </template>
 				</el-table-column>
-				<el-table-column prop="type" label="种类" min-width="15%">
-					<template #default="scope">
-						<span v-if="scope.row.type === 0">检查</span>
-						<span v-if="scope.row.type === 1">检验</span>
-						<span v-if="scope.row.type === 2">处置</span>
-					</template>
-				</el-table-column>
 				<el-table-column prop="subject" label="收费项目" min-width="15%">
 				</el-table-column>
 
@@ -129,12 +115,7 @@
             <el-autocomplete style="width: 360px" :fetch-suggestions="deptnameselect" v-model="updatedeptName" @input="selectbykeshi" />
 
           </el-form-item>
-          <el-form-item prop="type" label="种类">
-            <el-select v-model.trim="updateline.type" placeholder="请选择">
-              <el-option v-for="item in options1" :key="item.value" :label="item.label" :value="item.value">
-              </el-option>
-            </el-select>
-          </el-form-item>
+
 					<el-form-item prop="subject" label="收费项目">
 						<el-input v-model="updateline.subject" />
 					</el-form-item>
@@ -166,12 +147,6 @@
             <el-autocomplete style="width: 360px" :fetch-suggestions="deptnameselect" v-model="adddeptName" @input="selectbykeshi" />
 
           </el-form-item>
-					<el-form-item prop="type" label="种类">
-            <el-select v-model.trim="addline.type" placeholder="请选择">
-              <el-option v-for="item in options1" :key="item.value" :label="item.label" :value="item.value">
-              </el-option>
-            </el-select>
-					</el-form-item>
 					<el-form-item prop="subject" label="收费项目">
 						<el-input v-model="addline.subject" />
 					</el-form-item>
@@ -232,7 +207,6 @@
           price: "",
           standard: "",
           deptId: "",
-          type: "",
           subject: "",
 				},
 				//修改窗口
@@ -248,17 +222,6 @@
         adddeptName:"",
         updatedeptName:"",
 
-        //搜索种类
-        options1: [{
-          value: 0,
-          label: '检查 '
-        }, {
-          value: 1,
-          label: '检验 '
-        },{
-          value: 2,
-          label: '处置'
-        }],
 
         AllData:[],
         newArray:[],
@@ -304,7 +267,6 @@
       search(){
         this.newArray=this.AllData.filter(array => array.name.includes(this.input))
         this.newArray=this.newArray.filter(array => array.deptId === this.value0 || this.value0 === '')
-        this.newArray=this.newArray.filter(array => array.type === this.value || this.value === '')
 
         this.tableData=this.newArray
 
@@ -364,8 +326,7 @@
 			updateone() {
 				if (this.updateline.code.trim().length < 1 || this.updateline.name.trim().length < 1 ||
 					this.updateline.price.toString().trim().length < 1 || this.updateline.standard.trim().length < 1 ||
-					this.updateline.deptId.toString().trim().length < 1 || this.updateline.type.toString().trim().length < 1 ||
-					this.updateline.subject.trim().length < 1) {
+					this.updateline.deptId.toString().trim().length < 1 || this.updateline.subject.trim().length < 1) {
 					this.$message({
 						type: 'error',
 						message: '请完整填入信息！'
@@ -390,8 +351,7 @@
       addone() {
         if (this.addline.code.trim().length < 1 || this.addline.name.trim().length < 1 ||
             this.addline.price.toString().trim().length < 1 || this.addline.standard.trim().length < 1 ||
-            this.addline.deptId.toString().trim().length < 1 || this.addline.type.toString().trim().length < 1 ||
-            this.addline.subject.trim().length < 1) {
+            this.addline.deptId.toString().trim().length < 1 || this.addline.subject.trim().length < 1) {
           this.$message({
             type: 'error',
             message: '请完整填入信息！'
