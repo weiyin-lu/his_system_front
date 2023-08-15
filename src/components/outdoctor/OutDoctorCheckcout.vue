@@ -62,6 +62,10 @@
       <el-tag style="width: 70px;margin-right: 50px">检查内容</el-tag>
       <el-tag type="success" style="margin-right: 50px;font-size: 15px">{{ nodrugMsg }}</el-tag>
     </el-row>
+    <el-row style="margin-left: 10px;margin-top: 20px">
+      <el-tag style="width: 70px;margin-right: 50px">订单费用</el-tag>
+      <el-tag type="success" style="margin-right: 50px;font-size: 15px">{{ this.consume.price }}元</el-tag>
+    </el-row>
     <el-row style="text-align: center;margin-top: 20px">
       <el-icon color="#FFFFFF">
         <Select />
@@ -73,8 +77,10 @@
 
 <script>
 import http from '@/axios/http'
+import {Check, Close} from "@element-plus/icons-vue";
 export default {
   name: 'OutDoctorCheckout',
+  components: {Close, Check},
   data () {
     return{
       // 待插入信息的consume对象
@@ -86,15 +92,11 @@ export default {
         deptId:null,
         charge:null,
         number:null,
-        amount:null,
         type:'',
         subject:'',
         prescription:'',
-        useage:'',
         aim: '',
         body: '',
-        consumption:'',
-        frequency:'',
       },
       // 当前选择的病人的信息
       presentPatient: {},

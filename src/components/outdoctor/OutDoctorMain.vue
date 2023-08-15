@@ -125,7 +125,7 @@ export default {
   },
   data(){
     return {
-      page:'1',
+      page:'',
       input:'',
       pName:'',
       hit:'隐藏患者栏',
