@@ -98,13 +98,18 @@ export default {
           this.$message({
             type: 'success',
             message: '注销成功!'
-          });
+          })
           // 2.
           sessionStorage.removeItem('userinfo')
           sessionStorage.removeItem('token')
           // 3.
           this.$router.push('/');
+        }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消'
         });
+      });
     }
   },
   // 初始化写入登录数据

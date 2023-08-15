@@ -202,6 +202,11 @@ export default {
         sessionStorage.removeItem('token')
         // 3.
         this.$router.push('/');
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消'
+        });
       });
     },
     // 患者栏按钮

@@ -269,7 +269,9 @@ export default {
     open() {
       http.put('/patients/',this.patient)
           .then(response => {
-            console.log(response.data)
+            if (response.data.code = 'SUCCESS') {
+              this.$message.success("挂号成功!")
+            }
           })
     },
     //通过刷新页面实现清空

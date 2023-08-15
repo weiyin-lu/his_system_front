@@ -49,26 +49,26 @@
 
       <el-dialog v-model="dialogVisible"
                  title="处置支付状态"
-                 style="{width:100%;height:300px}">
+                 style="{width:100%;height:350px}">
         <div>
           <p><b>当前患者处置信息</b></p>
           <el-table :data="presentConsume">
-            <el-table-column type="index" />
-            <el-table-column label="处置名" prop="costName" />
-            <el-table-column label="价格" prop="price" />
-            <el-table-column label="时间" prop="time" />
+            <el-table-column type="index" label="No."/>
+            <el-table-column label="处置名" prop="costName" width="200"/>
+            <el-table-column label="价格" prop="price" width="80"/>
+            <el-table-column label="时间" prop="time" width="100" :formatter="dateFormat"/>
             <el-table-column label="支付状态" prop="payment"
-                             :formatter="row => row.payment == 1 ? '已支付' : '未支付'" />
+                             :formatter="row => row.payment == 1 ? '已支付' : '未支付'" width="80" />
             <el-table-column label="执行状态" prop="execute"
-                             :formatter="row => row.execute == 1 ? '已执行' : '未执行'" />
-            <el-table-column align="right" label="操作" v-if="editVisable">
+                             :formatter="row => row.execute == 1 ? '已执行' : '未执行'" width="80" />
+            <el-table-column align="center" label="操作" width="180">
               <template #default="scope">
                 <el-button type="primary" @click="handleConsumePay(scope.row)"
-                           :disabled="scope.row.payment == 1">
+                           :disabled="scope.row.payment == 1" v-if="editVisable">
                   支付
                 </el-button>
                 <el-button type="danger" @click="handleConsumeUnPay(scope.row)"
-                           :disabled="scope.row.payment == 0 && scope.row.takeMed == 0">
+                           :disabled="scope.row.payment == 0 && scope.row.takeMed == 0" v-if="editVisable">
                   退费
                 </el-button>
               </template>
@@ -221,7 +221,16 @@ export default {
           message: '已取消'
         });
       });
-    }
+    },
+    dateFormat(row, column) {
+      // 获取单元格数据
+      let data = row.time
+      if(data == null) {
+        return null
+      }
+      let dt = new Date(data)
+      return dt.getFullYear() + '-' + (dt.getMonth() + 1) + '-' + dt.getDate() + ' ' + dt.getHours() + ':' + dt.getMinutes() + ':' + dt.getSeconds()
+    },
   },
   // 1. 初始化写入登录数据
   // 2. 查询一次挂号信息数据
