@@ -12,7 +12,7 @@
 				</div>
 			</el-col>
 			<el-col :span="16" class="hh">
-				<div>欢迎来到医技模板</div>
+				<div>欢迎来到医技管理</div>
 			</el-col>
 			<el-col :span="4" class="hhh">
 				<div>
