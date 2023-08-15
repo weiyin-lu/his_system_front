@@ -3,28 +3,33 @@
 		<el-row>
 			<el-col :span="4" class="hhh" @click="menu">
 				<div>
-					<el-button style="height: 40px" icon="el-icon-s-home" type="primary">主菜单</el-button>
+					<el-button style="height: 40px" icon="el-icon-s-home" type="primary">
+            <el-icon><HomeFilled /></el-icon>
+            主菜单
+          </el-button>
 				</div>
 			</el-col>
 			<el-col :span="16" class="hh">
 				<div>欢迎来到患者检验科</div>
 			</el-col>
-			<el-col :span="4" class="hhh">
-				<div class="h">
-					<div class="my_table">
-						<el-table :data="getDocInfo">
-							<el-table-column width="100" prop="docId" label="医生编号"></el-table-column>
-							<el-table-column width="100" prop="name" label="医生姓名"></el-table-column>
-							<el-table-column width="100" prop="deptName" label="部门名称"></el-table-column>
-							<el-table-column width="100" prop="userType" label="医生类别"></el-table-column>
-							<el-table-column width="100" prop="title" label="医生级别"></el-table-column>
-						</el-table>
-					</div>
 
-					<el-button style="height: 40px" slot="reference" type="primary" class="el-icon-user">你好！{{name1}}</el-button>
+      <el-col :span="4" class="hhh">
+        <div>
+          <el-popover placement="left" width="500" trigger="hover">
+            <el-table :data="getDocInfo">
+              <el-table-column width="100" prop="docId" label="医生编号"></el-table-column>
+              <el-table-column width="100" prop="name" label="医生姓名"></el-table-column>
+              <el-table-column width="100" prop="deptName" label="部门名称"></el-table-column>
+              <el-table-column width="100" prop="userType" label="医生类别"></el-table-column>
+              <el-table-column width="100" prop="title" label="医生级别"></el-table-column>
+            </el-table>
+            <template #reference>
+              <el-button style="height: 40px"  slot="reference" type="primary" class="el-icon-user"><el-icon><User /></el-icon>你好！{{name1}}</el-button>
+            </template>
 
-				</div>
-			</el-col>
+          </el-popover>
+        </div>
+      </el-col>
 		</el-row>
 		<el-row style="margin-top: 40px">
 			<el-col :span="6">
@@ -34,18 +39,18 @@
 				<el-input clearable placeholder="请输入患者病历号" v-model.trim="keywords" type="text" style="width: 80%"></el-input>
 			</el-col>
 			<el-col :span="4">
-				<el-button icon="el-icon-search" @click="search" type="primary">查询</el-button>
+				<el-button @click="search" type="primary"><el-icon><Search /></el-icon>查询</el-button>
 			</el-col>
 			<el-col :span="4">
-				<el-button icon="el-icon-refresh" @click="refresh" type="primary">刷新</el-button>
+				<el-button @click="refresh" type="primary"><el-icon><Refresh /></el-icon>刷新</el-button>
 			</el-col>
 			<el-col :span="4">
-				<el-button icon="el-icon-refresh-left" @click="kong" type="primary">清空</el-button>
+				<el-button @click="kong" type="primary"><el-icon><RefreshLeft /></el-icon>清空</el-button>
 			</el-col>
 		</el-row>
 		<el-col :span="24">
 			<div>
-        <el-table :data="patientlist">
+        <el-table :data="patientlist" border>
           <el-table-column prop="recordId" label="病历号" width="100"></el-table-column>
           <el-table-column prop="name" label="姓名" width="100"></el-table-column>
 
@@ -136,8 +141,10 @@
 <script>
 	import http from "@/axios/http"
   import {rowProps} from "element-plus";
+  import {HomeFilled, Refresh, RefreshLeft, Search, User} from "@element-plus/icons-vue";
 	export default {
 		name: "CheckOutCore",
+    components: {RefreshLeft, Refresh, Search, HomeFilled, User},
     computed: {
       rowProps() {
         return rowProps
@@ -284,21 +291,5 @@
 		height: 40px;
 		color: white;
 
-	}
-
-	.my_table {
-		position: absolute;
-		z-index: 2;
-		display: none;
-		left: 60%;
-		top: 10%;
-		padding: 20px;
-		background: white;
-		border-radius: 10px;
-		box-shadow: 0px 0px 5px 1px #848080;
-	}
-
-	.h:hover .my_table {
-		display: block;
 	}
 </style>

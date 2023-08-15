@@ -3,15 +3,15 @@
 		<el-row>
 			<el-col :span="4">
 				<div class="h">
-					<el-button style="height: 40px" type="primary" class="el-icon-back" @click="returnLogin">退出</el-button>
+					<el-button style="height: 40px" type="primary" class="el-icon-back" @click="returnLogin"><el-icon><ArrowLeft /></el-icon>退出</el-button>
 				</div>
 			</el-col>
 			<el-col :span="16">
 				<div class="login_title">医技工作站</div>
 			</el-col>
-			<el-col :span="4">
-				<div class="h">
-          <div class="my_table">
+      <el-col :span="4" class="hhh">
+        <div>
+          <el-popover placement="left" width="500" trigger="hover">
             <el-table :data="getDocInfo">
               <el-table-column width="100" prop="docId" label="医生编号"></el-table-column>
               <el-table-column width="100" prop="name" label="医生姓名"></el-table-column>
@@ -19,55 +19,39 @@
               <el-table-column width="100" prop="userType" label="医生类别"></el-table-column>
               <el-table-column width="100" prop="title" label="医生级别"></el-table-column>
             </el-table>
-          </div>
+            <template #reference>
+              <el-button style="height: 40px" slot="reference" type="primary" class="el-icon-user"><el-icon><User /></el-icon>你好！{{name}}</el-button>
+            </template>
 
-						<el-button style="height: 40px" slot="reference" type="primary" class="el-icon-user">你好！{{name}}</el-button>
-				</div>
-			</el-col>
+          </el-popover>
+        </div>
+      </el-col>
 		</el-row>
 
 		<el-row>
 			<el-col :span="16" :offset="4">
-				<el-row>
-					<div>
+        <el-row>
+          <el-col :span="12">
+            <div class="div1"><el-icon><OfficeBuilding /></el-icon></div>
+          </el-col>
 
-						<el-col :span="6">
-							<div class="div1"><i class="el-icon-office-building"></i></div>
-						</el-col>
-						<el-col :span="6">
-							<div class="div1"><i class="el-icon-s-claim"></i></div>
-						</el-col>
-						<el-col :span="6">
-							<div class="div1"><i class="el-icon-s-finance"></i></div>
-						</el-col>
-						<el-col :span="6">
-							<div class="div1"><i class="el-icon-s-custom"></i></div>
-						</el-col>
-						<el-col :span="6">
-							<div>
-								<el-button type="primary" @click.native="h1">患者检验</el-button>
-							</div>
-						</el-col>
-						<el-col :span="6">
-							<div>
-								<el-button type="primary" @click.native="h2">患者检查</el-button>
-							</div>
-						</el-col>
-						<el-col :span="6">
-							<div>
-								<el-button type="primary" @click.native="h3">患者处置</el-button>
-							</div>
-						</el-col>
-						<el-col :span="6">
-							<div>
-								<el-button type="primary" @click.native="h4">医技管理</el-button>
-							</div>
-						</el-col>
-						<el-col :span="24">
-							<div class="row"></div>
-						</el-col>
-					</div>
-				</el-row>
+          <el-col :span="12">
+            <div class="div1"><el-icon><Avatar /></el-icon></div>
+          </el-col>
+          <el-col :span="12">
+            <div>
+              <el-button type="primary" @click.native="h1">患者检验</el-button>
+            </div>
+          </el-col>
+          <el-col :span="12">
+            <div>
+              <el-button type="primary" @click.native="h4">医技管理</el-button>
+            </div>
+          </el-col>
+          <el-col :span="24">
+            <div class="row"></div>
+          </el-col>
+        </el-row>
 			</el-col>
 		</el-row>
 	</div>
@@ -77,7 +61,9 @@
 </style>
 <script>
 	import axios from "axios";
+  import {ArrowLeft, Avatar, Checked, OfficeBuilding, User, WalletFilled} from "@element-plus/icons-vue";
 	export default {
+    components: {Avatar, Checked, OfficeBuilding, WalletFilled, ArrowLeft, User},
 		data() {
 			return {
 				name: '',
@@ -145,21 +131,8 @@
 	}
 
 	.div1 {
+
 		font-size: 400%;
 		margin-top: 100px;
 	}
-
-  .my_table{
-    position: absolute;
-    display: none;
-    left: 60%;
-    top: 10%;
-    padding: 20px;
-    background: white;
-    border-radius: 10px;
-    box-shadow: 0px 0px 5px 1px #848080;
-  }
-  .h:hover .my_table{
-    display: block;
-  }
 </style>
