@@ -50,7 +50,7 @@
             </div>
           </el-tab-pane>
         </el-tabs>
-
+        <el-button v-if="completeVisable" type="warning" @click="complete">结诊</el-button>
       </el-aside>
       <el-container>
         <!-- -------------------------------------------------------------main部分--------------------------------------------------------- -->
@@ -142,6 +142,8 @@ export default {
         message: '待选择患者',
         pName: '等待选择...',
       },
+      // 结诊按钮显示标识
+      completeVisable: false,
       // 当前登录医生的信息
       userInfo: {},
       timer:''
@@ -157,21 +159,29 @@ export default {
     },
     // 选中列表中的某一患者后更新信息
     // 1. 根据选中的患者填入父组件信息
-    // 2. 将选中患者的信息存入store
-    // 3. 切换到问诊信息页
-    // 4. 刷新内容
+    // 2. 结诊检查
+    // 3. 将选中患者的信息存入store
+    // 4. 切换到问诊信息页
+    // 5. 显示结诊按钮
+    // 6. 刷新子页面内容
     cellClick(row){
       // 1.
       this.presentPatient = this.table1Data[row.index]
       this.patientInfo.pName= row.name;
       this.patientInfo.message =
-          '病历号: '+ row.recordId+' | 姓名：'+row.name+' | 年龄：'+row.age+' | 性别：'+row.gender
+          '病历号: '+ row.recordId+' | 姓名：'+row.name+' | 年龄：'+row.age+' | 性别：'+row.gender+' | 状态：'+row.state
       // 2.
-      this.$store.commit("persentPatient",this.presentPatient)
+      if (this.presentPatient.state == '结诊') {
+        this.$message.warning('该患者已结诊！')
+      }
       // 3.
+      this.$store.commit("persentPatient",this.presentPatient)
+      // 4.
       this.$router.push('/outdoctor/medrecord')
       this.page = '1'
-      // 4.
+      // 5.
+      this.completeVisable = true
+      // 6.
       this.timer = new Date().getTime()
     },
     // 刷新提示消息
@@ -232,6 +242,27 @@ export default {
         this.$router.push('/outdoctor/med');
       }
     },
+    // 为当前患者设置结诊
+    complete() {
+      this.$confirm('确认对该患者结诊?', '注意', {
+        cancelButtonText: '取消',
+        confirmButtonText: '确定',
+        type: 'warning'
+      }).then(() => {
+        http.get('/outdoctors/patient/completed/'+ this.presentPatient.id)
+            .then(response => {
+              if (response.data.code == 'SUCCESS') {
+                this.$message.success(this.presentPatient.name + '已结诊')
+                this.$router.go(0);
+              }
+            })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消'
+        });
+      });
+    }
   },
   // 在页面初始化时访问的数据
   // 1. 从sessionstorage中获得登录账户的基本信息，存入当前页对象里

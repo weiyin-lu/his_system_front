@@ -168,7 +168,6 @@ export default {
         illName: '',
         icdCode: '',
         illType: '',
-        illKind: ''
       },
     //   二级页显示标识
       dialogVisible: false

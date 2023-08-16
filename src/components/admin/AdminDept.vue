@@ -130,7 +130,7 @@
 			getlist() {
 				http.get("/depts/")
 					.then(response => {
-						// console.log(response.data)
+						console.log(response.data)
 						if (response.data.code === "SUCCESS") {
 							this.deptlist = response.data.data
 							this.AllArray = response.data.data

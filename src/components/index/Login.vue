@@ -63,25 +63,24 @@
         },
         methods: {
           // 登录方法，检查前端表单验证通过后即可进入正常流程
+          // 1. 检查表单验证，如果通过执行234
+          // 2. 把token写入到sessionstorage
+          // 3. 把token二次传递回后端请求token的解析信息，存入sessionstorage
+          //    因为使用了post方式传递单独参数，因此需要修改header
+          // 4. 从解析数据里判断该用户的权限，直接跳转到对应工作站
           login() {
+            // 1.
             this.$refs.loginForm.validate(
                 valid => {
-                  // 如果表单验证通过，在下方执行请求后端的流程
                   if (valid) {
                     http.post("/auth/", this.loginForm)
                         .then(response => {
                           if(response.data.code == "SUCCESS") {
-                            // 登录成功的情况下：
-                            // 1. 把token写入到sessionstorage
-                            // 2. 把token二次传递回后端请求token的解析信息，存入sessionstorage
-                            //    因为使用了post方式传递单独参数，因此需要修改header
-                            // 3. 从解析数据里判断该用户的权限，直接跳转到对应工作站
 
-                            // 1.
-                            console.log(response.data.data)
+                            // 2.
                             sessionStorage.setItem("token",response.data.data)
                             this.$message.success("登录成功")
-                            // 2.
+                            // 3.
                             http.put("/auth/", response.data.data,{
                               headers: {
                                 'Content-Type' : 'text/plain'
@@ -90,7 +89,7 @@
                             .then(info => {
                               sessionStorage.setItem('userinfo',JSON.stringify(info.data.data));
                               this.userInfo = info.data.data;
-                              // 3.
+                              // 4.
                               switch (info.data.data.userType) {
                                 case '门诊医生': this.$router.push('/outdoctor');console.log("run");break;
                                 case '挂号收费员': this.$router.push('/outpatient');break;
@@ -99,8 +98,6 @@
                                 case '医院管理员': this.$router.push('/admin');break;
                               }
                             })
-                            // 3.
-                            // 未完成，需要等待其他模块实装 卢子昂_2023-08-11_19:55
                           } else {
                             this.$message.error("登录失败，" + response.data.msg)
                           }
